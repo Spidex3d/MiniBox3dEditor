@@ -41,5 +41,8 @@
     <ClInclude Include="inc\boXM\boXM.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="gl\mesh\boxMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

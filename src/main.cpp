@@ -25,6 +25,8 @@ int main() {
     app.guiMakeContextCurrent(window);
 
     app.guiSetWindowIcon(window, L"icon_01.ico");
+    // Default cube
+    boXMesh cube =  boXCreateCubeMesh(Vec3(0.0f, 0.0f, 5.0f),  Vec3(1.5f, 1.5f, 1.5f));
 
     while (!app.guiWindowShouldClose(window))
     {
@@ -32,18 +34,10 @@ int main() {
 
         //app.guiClearColor(window, 28, 28, 28); // set the color to gray
         gl.boXGLClearColor(window, 28, 28, 28);
-
-        gl.boXGLDrawLine(window, 100, 100, 600, 300, 1.0f, Vec3(1.0f, 0.0f, 0.0f));
        
-        gl.boXGLDrawLine(window, 100, 150, 600, 350, 3.0f, Vec3(0.0f, 1.0f, 0.0f));
        
-        gl.boXGLDrawLine(window, 100, 200, 600, 400, 5.0f, Vec3(0.0f, 0.5f, 1.0f));
-
-        gl.boXGLDrawLine(window, 100, 400, 600, 400, 1.0f, Vec3(1.0f, 0.0f, 0.0f));
-
-		gl.boXGLDrawRect(window, 600, 25, 400, 200, 2.0f, Vec3(1.0f, 1.0f, 0.0f));
-
-
+        gl.boXGLDrawMesh(window, cube);
+		//gl.boXGLDrawCube(window, Vec3(1.5f, 0.0f, 3.0f), Vec3(1.0f, 1.0f, 1.0f), Vec3(1.0f, 0.5f, 0.0f));
 
 
         app.guiPresent(window); // set the background color
@@ -57,3 +51,16 @@ int main() {
 
 
 }
+
+//gl.boXGLDrawLine(window, 100, 100, 600, 300, 1.0f, Vec3(1.0f, 0.0f, 0.0f));
+//
+//gl.boXGLDrawLine(window, 100, 150, 600, 350, 3.0f, Vec3(0.0f, 1.0f, 0.0f));
+//
+//gl.boXGLDrawLine(window, 100, 200, 600, 400, 5.0f, Vec3(0.0f, 0.5f, 1.0f));
+//
+//gl.boXGLDrawLine(window, 100, 400, 600, 400, 1.0f, Vec3(1.0f, 0.0f, 0.0f));
+//
+//gl.boXGLDrawCircle(window, 800, 350, 100, 2.0f, Vec3(0.0f, 1.0f, 0.0f));
+//
+//gl.boXGLDrawRect(window, 600, 25, 400, 200, 2.0f, Vec3(1.0f, 1.0f, 0.0f));
+//gl.boXGLDrawFilledRect(window, 600, 455, 400, 200, Vec3(0.0f, 0.0f, 1.0f));
