@@ -1,5 +1,8 @@
 #include "guiWindow.h"
+#include <miniBoxLog.h>
 #include <algorithm>
+#include <limits>
+#include <guiWinDeffs.h>
 
 guiWin::guiWin()
 {
@@ -22,6 +25,8 @@ guiWin::gui_window* guiWin::guiCreateWindow(
     //########
     // Create our software framebuffer
     window->pixels.resize(width * height);
+	// depth buffer for 3D rendering
+    window->depthBuffer.resize(width * height);
 
     // Set up bitmap info for StretchDIBits
     window->bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -117,6 +122,30 @@ void guiWin::guiPollEvents(gui_window* window)
         DispatchMessage(&msg);
     }
 }
+// Depth buffer management for 3D rendering
+void guiWin::boXGLClearDepthBuffer(gui_window* window)
+{
+	if (!window)
+		return;
+	std::fill(window->depthBuffer.begin(), window->depthBuffer.end(), std::numeric_limits<float>::infinity());
+}
+// Pixel drawing with depth testing
+void guiWin::boXGLDrawPixelDepth(gui_window* window, int x, int y, float depth, Vec3 colour)
+{
+	if (!window)
+		return;
+	if (x < 0 || x >= window->width || y < 0 || y >= window->height)
+		return;
+	int index = y * window->width + x;
+	// Depth test
+	if (depth < window->depthBuffer[index])
+	{
+		window->depthBuffer[index] = depth;
+		unsigned int pixelColour = Vec3ToColour(colour);
+		window->pixels[index] = pixelColour;
+	}
+
+}
 
 void guiWin::guiPresent(gui_window* window)
 {
@@ -153,6 +182,14 @@ void guiWin::guiSetWindowIcon(gui_window* window, const wchar_t* iconPath)
         SendMessage(window->hwnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
         SendMessage(window->hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
     }
+}
+
+int guiWin::guiGetKeys(gui_window* window, int keycode)
+{
+	
+    if (!window) return GLWIN_RELEASE;
+    auto it = window->keyState.find(keycode);
+    return (it != window->keyState.end() && it->second) ? GLWIN_PRESS : GLWIN_RELEASE;
 }
 
 void guiWin::guiDestroyWindow(gui_window* window)
@@ -218,6 +255,12 @@ LRESULT CALLBACK guiWin::WindowProc(
         PostQuitMessage(0);
         return 0;
     }
+    case WM_KEYDOWN:
+        if (window) window->keyState[(int)wParam] = true;
+        return 0;
+    case WM_KEYUP:
+        if (window) window->keyState[(int)wParam] = false;
+        return 0;
 
     default:
         break;

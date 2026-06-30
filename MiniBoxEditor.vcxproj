@@ -136,6 +136,7 @@
   <ItemGroup>
     <ClInclude Include="gl\boXGL.h" />
     <ClInclude Include="gl\mesh\boxMesh.h" />
+    <ClInclude Include="gui\guiWinDeffs.h" />
     <ClInclude Include="gui\guiWindow.h" />
     <ClInclude Include="inc\boXM\boXM.h" />
     <ClInclude Include="inc\global.h" />

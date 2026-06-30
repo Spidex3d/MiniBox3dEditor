@@ -6,6 +6,9 @@
 #include <windows.h>
 #include <vector>
 #include <cstdint>
+#include <unordered_map>
+#include <boXM\boXM.h>
+
 
 
 
@@ -24,7 +27,13 @@ public:
 		// Our software screen buffer
 		std::vector<unsigned int> pixels;
 
+		// depth buffer
+		std::vector<float> depthBuffer;
+
 		BITMAPINFO bitmapInfo{};
+
+		std::unordered_map<int, bool> keyState;
+		std::unordered_map<int, bool> prevKeyState;
 	};
 	
 public:
@@ -43,27 +52,27 @@ public:
 
 	void guiPollEvents(gui_window* window);
 
+	void boXGLClearDepthBuffer(gui_window* window);
+	
+	void boXGLDrawPixelDepth(gui_window* window, int x, int y, float depth, Vec3 colour);
+
 	
 	void guiPresent(gui_window* window); //send the color to the screen
-
-	void guiSwapBuffers(gui_window* window);
-	
 	
 	// Window icon 
 	void guiSetWindowIcon(gui_window* window, const wchar_t* iconPath);
 	
 	typedef void(*GLwinResizeCallback)(int width, int height);
 
-	
-	// Keyboard input API
-	//int guiGetKey(gui_window* window, int keycode);
+	// ################################################################################################################
+	// ############################################ Keyboard and mouse input ##########################################
+	// ################################################################################################################
+	int guiGetKeys(gui_window* window, int keycode);
+	int guiGetMouseButton(gui_window* window, int button);
+	void guiGetCursorPos(gui_window* window, double* xpos, double* ypos);
+	// ################################################################################################################
 
-	// Mouse input API
-	//int guiGetMouseButton(gui_window* window, int button);
-	//void guiGetCursorPos(gui_window* window, double* xpos, double* ypos);
 
-	// guiUI: Simple GUI message box
-	// guiUI_MessageBox(const wchar_t* title, const wchar_t* message);
 
 	
 	// Terminate and cleanup library 

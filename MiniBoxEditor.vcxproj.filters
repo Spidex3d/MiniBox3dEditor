@@ -44,5 +44,8 @@
     <ClInclude Include="gl\mesh\boxMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="gui\guiWinDeffs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

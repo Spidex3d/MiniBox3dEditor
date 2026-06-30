@@ -2,6 +2,7 @@
 #include <miniBoxLog.h>
 #include <global.h>
 #include <guiWindow.h>
+#include <guiWinDeffs.h>
 #include <boXM\boXM.h>
 #include <boXGL.h>
 
@@ -26,18 +27,26 @@ int main() {
 
     app.guiSetWindowIcon(window, L"icon_01.ico");
     // Default cube
-    boXMesh cube =  boXCreateCubeMesh(Vec3(0.0f, 0.0f, 5.0f),  Vec3(1.5f, 1.5f, 1.5f));
+    boXMesh cube =  boXCreateCubeMesh(Vec3(3.0f, 0.0f, 5.0f),  Vec3(1.5f, 1.5f, 1.5f));
 
     while (!app.guiWindowShouldClose(window))
     {
         app.guiPollEvents(window);
 
+        if (app.guiGetKeys(window, GLWIN_ESCAPE) == GLWIN_PRESS) {
+            std::cout << "Escape key pressed, closing window." << std::endl;
+            break; // Exit loop to close window
+        }
+        if (app.guiGetKeys(window, GLWIN_SPACE) == GLWIN_PRESS) {
+            std::cout << "Space key pressed, It works" << std::endl;
+        }
+
         //app.guiClearColor(window, 28, 28, 28); // set the color to gray
         gl.boXGLClearColor(window, 28, 28, 28);
+        gl.boXGLClearDepth(window);
        
        
         gl.boXGLDrawMesh(window, cube);
-		//gl.boXGLDrawCube(window, Vec3(1.5f, 0.0f, 3.0f), Vec3(1.0f, 1.0f, 1.0f), Vec3(1.0f, 0.5f, 0.0f));
 
 
         app.guiPresent(window); // set the background color
@@ -51,6 +60,9 @@ int main() {
 
 
 }
+
+
+//gl.boXGLDrawCube(window, Vec3(1.5f, 0.0f, 3.0f), Vec3(1.0f, 1.0f, 1.0f), Vec3(1.0f, 0.5f, 0.0f));
 
 //gl.boXGLDrawLine(window, 100, 100, 600, 300, 1.0f, Vec3(1.0f, 0.0f, 0.0f));
 //

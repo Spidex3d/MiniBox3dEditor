@@ -6,7 +6,7 @@
 struct boXVertex
 {
     Vec3 position;
-
+	// is the vertex selected? This can be used for highlighting or other purposes.
     bool selected = false;
 };
 
@@ -14,7 +14,7 @@ struct boXEdge
 {
     int v0 = -1;
     int v1 = -1;
-
+	// is the edge selected? This can be used for highlighting or other purposes.
     bool selected = false;
 };
 
@@ -28,7 +28,7 @@ struct boXFace
     int v3 = -1;
 
     Vec3 colour = Vec3(0.6f, 0.6f, 0.6f);
-
+	// is the face selected? This can be used for highlighting or other purposes.
     bool selected = false;
 };
 
@@ -39,6 +39,7 @@ struct boXMesh
     std::vector<boXFace> faces;
 };
 
+// This is useful for calculating the normal of a face, which can be used for lighting calculations or backface culling.
 inline Vec3 boXFaceNormal(const boXMesh& mesh, const boXFace& face)
 {
     const Vec3& a = mesh.vertices[face.v0].position;
