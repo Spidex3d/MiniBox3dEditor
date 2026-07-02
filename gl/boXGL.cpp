@@ -1,4 +1,5 @@
 #include "boXGL.h"
+
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -193,6 +194,42 @@ static bool boXGLProjectPoint(
     return true;
 }
 
+// ####################################################### Camera Helper ###############################
+static bool boXGLProjectPointCamera(
+    guiWin::gui_window* window,
+    const Camera& camera,
+    const vec3& worldPoint,
+    boXGL::boXScreenVertex& out)
+{
+    if (!window)
+        return false;
+
+    vec3 relative = worldPoint - camera.Position;
+
+    float cameraX = dot(relative, camera.Right);
+    float cameraY = dot(relative, camera.Up);
+    float cameraZ = dot(relative, camera.Front);
+
+    const float nearPlane = 0.1f;
+    const float focalLength = 500.0f;
+
+    if (cameraZ <= nearPlane)
+        return false;
+
+    out.x =
+        static_cast<float>(window->width) * 0.5f +
+        (cameraX * focalLength) / cameraZ;
+
+    out.y =
+        static_cast<float>(window->height) * 0.5f -
+        (cameraY * focalLength) / cameraZ;
+
+    out.z = cameraZ;
+
+    return true;
+}
+
+
 // Update the boXGLDrawCube function to use boXScreenVertex instead of vec2 for the 'projected' array.  
 void boXGL::boXGLDrawCube(guiWin::gui_window* window, vec3 position, vec3 size, vec3 colour)
 {
@@ -228,6 +265,7 @@ void boXGL::boXGLDrawCube(guiWin::gui_window* window, vec3 position, vec3 size, 
     for (int i = 0; i < 8; ++i)
     {
         visible[i] = boXGLProjectPoint(window, vertices[i], projected[i]);
+        //visible[i] = boXGLProjectPointCamera(window, camera, vertex.position, p)
     }
 
     auto DrawEdge = [&](int a, int b)
@@ -434,15 +472,13 @@ void boXGL::boXGLClearDepthBuffer(guiWin::gui_window* window)
 }
 
 
-
-void boXGL::boXGLDrawMeshFaces(guiWin::gui_window* window, const boXMesh& mesh)
+void boXGL::boXGLDrawMeshFaces(guiWin::gui_window* window, const Camera& camera, const boXMesh& mesh)
 {
     if (!window)
         return;
 
     for (const boXFace& face : mesh.faces)
     {
-        //vec2 p0, p1, p2, p3;
         boXScreenVertex p0, p1, p2, p3;
 
         const vec3& v0 = mesh.vertices[face.v0].position;
@@ -450,25 +486,17 @@ void boXGL::boXGLDrawMeshFaces(guiWin::gui_window* window, const boXMesh& mesh)
         const vec3& v2 = mesh.vertices[face.v2].position;
         const vec3& v3 = mesh.vertices[face.v3].position;
 
-       /* if (!boXGLProjectPointDepth(window, v0, p0)) continue;
-        if (!boXGLProjectPointDepth(window, v1, p1)) continue;
-        if (!boXGLProjectPointDepth(window, v2, p2)) continue;
-        if (!boXGLProjectPointDepth(window, v3, p3)) continue;*/
-
-        if (!boXGLProjectPoint(window, v0, p0)) continue;
-        if (!boXGLProjectPoint(window, v1, p1)) continue;
-        if (!boXGLProjectPoint(window, v2, p2)) continue;
-        if (!boXGLProjectPoint(window, v3, p3)) continue;
-
-      /*  boXGLDrawFilledTriangle(window, p0, p1, p2, face.colour);
-        boXGLDrawFilledTriangle(window, p0, p2, p3, face.colour);*/
+        if (!boXGLProjectPointCamera(window, camera, v0, p0)) continue;
+        if (!boXGLProjectPointCamera(window, camera, v1, p1)) continue;
+        if (!boXGLProjectPointCamera(window, camera, v2, p2)) continue;
+        if (!boXGLProjectPointCamera(window, camera, v3, p3)) continue;
 
         boXGLDrawFilledTriangleDepth(window, p0, p1, p2, face.colour);
         boXGLDrawFilledTriangleDepth(window, p0, p2, p3, face.colour);
     }
 }
 
-void boXGL::boXGLDrawMeshEdges(guiWin::gui_window* window, const boXMesh& mesh, vec3 colour)
+void boXGL::boXGLDrawMeshEdges(guiWin::gui_window* window, const Camera& camera, const boXMesh& mesh, vec3 colour)
 {
     if (!window)
         return;
@@ -481,10 +509,10 @@ void boXGL::boXGLDrawMeshEdges(guiWin::gui_window* window, const boXMesh& mesh, 
         boXScreenVertex p0;
         boXScreenVertex p1;
 
-        if (!boXGLProjectPoint(window, v0, p0))
+        if (!boXGLProjectPointCamera(window, camera, v0, p0))
             continue;
 
-        if (!boXGLProjectPoint(window, v1, p1))
+        if (!boXGLProjectPointCamera(window, camera, v1, p1))
             continue;
 
         vec3 edgeColour = edge.selected
@@ -504,7 +532,7 @@ void boXGL::boXGLDrawMeshEdges(guiWin::gui_window* window, const boXMesh& mesh, 
     }
 }
 
-void boXGL::boXGLDrawMeshVertices(guiWin::gui_window* window, const boXMesh& mesh, vec3 colour)
+void boXGL::boXGLDrawMeshVertices(guiWin::gui_window* window, const Camera& camera, const boXMesh& mesh, vec3 colour)
 {
     if (!window)
         return;
@@ -513,7 +541,7 @@ void boXGL::boXGLDrawMeshVertices(guiWin::gui_window* window, const boXMesh& mes
     {
         boXScreenVertex p;
 
-        if (!boXGLProjectPoint(window, vertex.position, p))
+        if (!boXGLProjectPointCamera(window, camera, vertex.position, p))
             continue;
 
         vec3 drawColour = vertex.selected
@@ -522,28 +550,33 @@ void boXGL::boXGLDrawMeshVertices(guiWin::gui_window* window, const boXMesh& mes
 
         float radius = vertex.selected ? 5.0f : 3.0f;
 
-		boXGLDrawCircle(window, static_cast<int>(p.x), static_cast<int>(p.y), static_cast<int>(radius), 1.0f, drawColour);
+        boXGLDrawCircle(
+            window,
+            static_cast<int>(p.x),
+            static_cast<int>(p.y),
+            static_cast<int>(radius),
+            1.0f,
+            drawColour);
     }
 }
 
-void boXGL::boXGLDrawMesh(guiWin::gui_window* window, const boXMesh& mesh)
+void boXGL::boXGLDrawMesh(guiWin::gui_window* window, const Camera& camera, const boXMesh& mesh)
 {
     
     if (!window)
         return;
 
-    // 1. Draw faces first
-    boXGLDrawMeshFaces(window, mesh);
+    boXGLDrawMeshFaces(window, camera, mesh);
 
-    // 2. Draw wire edges on top
     boXGLDrawMeshEdges(
         window,
+        camera,
         mesh,
         vec3(0.05f, 0.05f, 0.05f));
 
-    // 3. Draw vertices last
     boXGLDrawMeshVertices(
         window,
+        camera,
         mesh,
         vec3(0.95f, 0.95f, 0.95f));
 }

@@ -2,6 +2,7 @@
 #include <guiWindow.h>
 #include <boXM\boXM.h>
 #include <mesh\boxMesh.h>
+#include <camera.h> // Ensure Camera type is included
 
 class boXGL {
 
@@ -46,13 +47,13 @@ public:
 	
 	void boXGLClearDepthBuffer(guiWin::gui_window* window); // move to boXGL class
 
-	void boXGLDrawMeshFaces(guiWin::gui_window* window,	const boXMesh& mesh);
+	void boXGLDrawMeshFaces(guiWin::gui_window* window, const Camera& camera, const boXMesh& mesh);
 	
-	void boXGLDrawMeshEdges(guiWin::gui_window* window,	const boXMesh& mesh, vec3 colour);
+	void boXGLDrawMeshEdges(guiWin::gui_window* window, const Camera& camera, const boXMesh& mesh, vec3 colour);
 	
-	void boXGLDrawMeshVertices(guiWin::gui_window* window, const boXMesh& mesh,	vec3 colour);
+	void boXGLDrawMeshVertices(guiWin::gui_window* window, const Camera& camera, const boXMesh& mesh, vec3 colour);
 	
-	void boXGLDrawMesh(guiWin::gui_window* window, const boXMesh& mesh);
+	void boXGLDrawMesh(guiWin::gui_window* window, const Camera& camera, const boXMesh& mesh);
 
 private:
 };

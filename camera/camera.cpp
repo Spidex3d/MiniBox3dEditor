@@ -15,11 +15,12 @@ Camera::Camera(vec3 position, vec3 up, float yaw, float pitch)
 
 mat4 Camera::GetViewMatrix()
 {
-    return mat4();
+    return lookAt(Position, Position + Front, Up);
 }
 
-mat4 Camera::GetProjectionMatrix(float aspectRatio) {
-    return perspective(radians(Zoom), aspectRatio, 0.1f, 100.0f);
+mat4 Camera::GetProjectionMatrix(float aspectRatio)
+{
+    return perspective(Zoom, aspectRatio, 0.1f, 100.0f);
 }
 
 void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime) {
@@ -67,6 +68,56 @@ void Camera::updateCameraVectors() {
     front.y = sin(radians(Pitch));
     front.z = sin(radians(Yaw)) * cos(radians(Pitch));
     Front = normalize(front);
+    Right = normalize(cross(Front, WorldUp));
+    Up = normalize(cross(Right, Front));
+}
+void Camera::ProcessOrbit(float xoffset, float yoffset)
+{
+    xoffset *= OrbitSensitivity;
+    yoffset *= OrbitSensitivity;
+
+    Yaw += xoffset;
+    Pitch += yoffset;
+
+    if (Pitch > 89.0f)
+        Pitch = 89.0f;
+
+    if (Pitch < -89.0f)
+        Pitch = -89.0f;
+
+    UpdateOrbitCamera();
+}
+
+void Camera::ProcessOrbitZoom(float yoffset)
+{
+    Distance -= yoffset * ZoomSensitivity;
+
+    if (Distance < 1.0f)
+        Distance = 1.0f;
+
+    if (Distance > 50.0f)
+        Distance = 50.0f;
+
+    UpdateOrbitCamera();
+}
+
+void Camera::UpdateOrbitCamera()
+{
+    float yawRad = radians(Yaw);
+    float pitchRad = radians(Pitch);
+
+    vec3 direction;
+
+    direction.x = cos(yawRad) * cos(pitchRad);
+    direction.y = sin(pitchRad);
+    direction.z = sin(yawRad) * cos(pitchRad);
+
+    direction = normalize(direction);
+
+    // Camera sits behind the target, looking toward it.
+    Position = Target - direction * Distance;
+
+    Front = normalize(Target - Position);
     Right = normalize(cross(Front, WorldUp));
     Up = normalize(cross(Right, Front));
 }

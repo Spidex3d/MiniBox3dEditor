@@ -1,11 +1,11 @@
 #include <iostream>
 #include <miniBoxLog.h>
-#include <global.h>
 #include <guiWindow.h>
 #include <guiWinDeffs.h>
 #include <boXM\boXM.h>
 #include <boXGL.h>
-#include <editorState.h>
+#include <camera.h>
+#include <editorInput.h>
 
 // 24/06/26 A name for our graphics library is boXGL !!
 
@@ -18,8 +18,8 @@ int main() {
 
     guiWin app;
     boXGL gl;
+    inputHandler in;
 	
-	EditorState editor; // used for selecting between object mode and edit mode
 
     guiWin::gui_window* window =
         app.guiCreateWindow(SCR_WIDTH, SCR_HEIGHT, TITLE);
@@ -30,26 +30,20 @@ int main() {
     app.guiMakeContextCurrent(window);
 
     app.guiSetWindowIcon(window, L"icon_01.ico");
+
+    Camera camera(vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 1.0f, 0.0f));
+    
+
     // Default cube
     boXMesh cube =  boXCreateCubeMesh(vec3(3.0f, 0.0f, 5.0f),  vec3(1.5f, 1.5f, 1.5f));
 
     while (!app.guiWindowShouldClose(window))
     {
-        app.guiPollEvents(window);
+		in.Timer();
 
-        if (app.guiGetKeyPressed(window, GLWIN_TAB) == GLWIN_PRESS)
-        {
-            if (editor.mode == EditorMode::ObjectMode)
-            {
-                editor.mode = EditorMode::EditMode;
-                BOX_LOG_INFO("Edit Mode");
-            }
-            else
-            {
-                editor.mode = EditorMode::ObjectMode;
-                BOX_LOG_INFO("Object Mode");
-            }
-        }
+        app.guiPollEvents(window);
+              
+		in.processInput(app, window, camera);// process keyboard input for camera movement
 
 		
         // mouse input
@@ -59,15 +53,16 @@ int main() {
             BOX_LOG_INFO("Mouse position: (" << mx << ", " << my << ")");
         }
 
-        //app.guiClearColor(window, 28, 28, 28); // set the color to gray
+        // set the color to gray
         gl.boXGLClearColor(window, 28, 28, 28);
-        gl.boXGLClearDepth(window);
-       
-       
-        gl.boXGLDrawMesh(window, cube);
+		// clear the depth buffer
+        gl.boXGLClearDepth(window);     
+        
 
+        // draw a cube and look at it with the new camera
+        gl.boXGLDrawMesh(window, camera, cube);
 
-        app.guiPresent(window); // set the background color
+		app.guiPresent(window); // set the background color and draw the cube
 
         app.guiEndFrame(window);
     }

@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)inc;$(SolutionDir)gui;$(SolutionDir)editor;$(SolutionDir)gl</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)inc;$(SolutionDir)gui;$(SolutionDir)editor;$(SolutionDir)gl;$(SolutioDir)camera</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -119,7 +119,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)inc;$(SolutionDir)gui;$(SolutionDir)editor;$(SolutionDir)gl</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)inc;$(SolutionDir)gui;$(SolutionDir)editor;$(SolutionDir)gl;$(SolutioDir)camera</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,6 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="camera\camera.cpp" />
+    <ClCompile Include="editor\editorInput.cpp" />
     <ClCompile Include="gl\boXGL.cpp" />
     <ClCompile Include="gui\guiGui.cpp" />
     <ClCompile Include="gui\guiWindow.cpp" />
@@ -137,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera\camera.h" />
+    <ClInclude Include="editor\editorInput.h" />
     <ClInclude Include="editor\editorState.h" />
     <ClInclude Include="gl\boXGL.h" />
     <ClInclude Include="gl\mesh\boxMesh.h" />
