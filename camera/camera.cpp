@@ -88,6 +88,8 @@ void Camera::ProcessOrbit(float xoffset, float yoffset)
     UpdateOrbitCamera();
 }
 
+
+
 void Camera::ProcessOrbitZoom(float yoffset)
 {
     Distance -= yoffset * ZoomSensitivity;
@@ -97,6 +99,19 @@ void Camera::ProcessOrbitZoom(float yoffset)
 
     if (Distance > 50.0f)
         Distance = 50.0f;
+
+    UpdateOrbitCamera();
+}
+
+void Camera::ProcessOrbitPan(float xoffset, float yoffset)
+{
+    float panAmount = Distance * PanSensitivity;
+
+    vec3 panRight = Right * (-xoffset * panAmount);
+    vec3 panUp = Up * (yoffset * panAmount);
+
+    Target += panRight;
+    Target += panUp;
 
     UpdateOrbitCamera();
 }

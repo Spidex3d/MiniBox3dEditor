@@ -23,9 +23,6 @@ public:
 
 	void processInput(guiWin& app, guiWin::gui_window* window, Camera& camera);
 
-	void mouse_callback(guiWin::gui_window* window, double xposIn, double yposIn);
-	void scroll_callback(guiWin::gui_window* window, double xoffset, double yoffset);
-
 	
 
 private:

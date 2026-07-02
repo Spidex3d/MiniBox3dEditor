@@ -254,6 +254,7 @@ void guiWin::guiEndFrame(gui_window* window)
     window->mouseDeltaX = 0.0;
     window->mouseDeltaY = 0.0;
     window->mouseWheelDelta = 0;
+   
 }
 
 void guiWin::guiDestroyWindow(gui_window* window)
@@ -414,6 +415,7 @@ LRESULT CALLBACK guiWin::WindowProc(
         {
             int wheelDelta = GET_WHEEL_DELTA_WPARAM(wParam);
             window->mouseWheelDelta += wheelDelta / WHEEL_DELTA;
+
         }
 
         return 0;

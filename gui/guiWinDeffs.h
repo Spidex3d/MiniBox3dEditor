@@ -34,10 +34,10 @@ constexpr  const wchar_t* TITLE = L"miniBox_Editor_3d";
 #define GLWIN_ESCAPE                  27 //0x1B
 
 // Action keys Enter, Space, Arrows, etc.
-#define GLWIN_RETURN                  13 //0x0D
-
 
 #define GLWIN_TAB					  9 // 0x09
+#define GLWIN_RETURN                  13 //0x0D
+#define GLWIN_SHIFT					  16 //0x10
 
 #define GLWIN_SPACE                   32 //0x20
 

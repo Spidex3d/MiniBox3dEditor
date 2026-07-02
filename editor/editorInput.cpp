@@ -25,10 +25,9 @@ void inputHandler::Timer()
     
 }
 void inputHandler::processInput(guiWin& app, guiWin::gui_window* window, Camera& camera)
-//void inputHandler::processInput(guiWin::gui_window* window)
 {
   
-    if (app.guiGetKeys(window, GLWIN_KEY_W) == GLWIN_PRESS)
+    /*if (app.guiGetKeys(window, GLWIN_KEY_W) == GLWIN_PRESS)
     {
         camera.ProcessKeyboard(FORWARD, deltaTime);
     }
@@ -47,13 +46,13 @@ void inputHandler::processInput(guiWin& app, guiWin::gui_window* window, Camera&
     if (app.guiGetKeys(window, GLWIN_KEY_D) == GLWIN_PRESS)
     {
         camera.ProcessKeyboard(RIGHT, deltaTime);
-    }
+    }*/
     // UP - Down
-    if (app.guiGetKeys(window, GLWIN_KEY_Z) == GLWIN_PRESS) {
+    /*if (app.guiGetKeys(window, GLWIN_KEY_Z) == GLWIN_PRESS) {
         camera.ProcessKeyboard(UP, deltaTime);
     }
     if (app.guiGetKeys(window, GLWIN_KEY_X) == GLWIN_PRESS)
-        camera.ProcessKeyboard(UP, -deltaTime);
+        camera.ProcessKeyboard(UP, -deltaTime);*/
 
 
     if (app.guiGetKeyPressed(window, GLWIN_TAB) == GLWIN_PRESS)
@@ -69,14 +68,45 @@ void inputHandler::processInput(guiWin& app, guiWin::gui_window* window, Camera&
             BOX_LOG_INFO("Object Mode");
         }
     }
+
+
+
+    double dx = 0.0;
+    double dy = 0.0;
+
+    app.guiGetMouseDelta(window, &dx, &dy);
+
+    if (app.guiGetMouseButton(window, GLWIN_MOUSE_BUTTON_MIDDLE) == GLWIN_PRESS)
+    {
+        bool middleMouseDown =
+            app.guiGetMouseButton(window, GLWIN_MOUSE_BUTTON_MIDDLE) == GLWIN_PRESS;
+
+        bool shiftDown =
+            app.guiGetKeys(window, GLWIN_SHIFT) == GLWIN_PRESS;
+
+        if (middleMouseDown && shiftDown)
+        {
+            camera.ProcessOrbitPan(
+                static_cast<float>(dx),
+                static_cast<float>(dy));
+        }
+        else if (middleMouseDown)
+        {
+            camera.ProcessOrbit(
+                static_cast<float>(dx),
+                static_cast<float>(-dy));
+        }
+       
+    }
+
+    int wheel = app.guiGetMouseWheel(window);
+
+    if (wheel != 0)
+    {
+        camera.ProcessOrbitZoom(static_cast<float>(wheel));
+    }
+
 }
 
 
 
-void inputHandler::mouse_callback(guiWin::gui_window* window, double xposIn, double yposIn)
-{
-}
-
-void inputHandler::scroll_callback(guiWin::gui_window* window, double xoffset, double yoffset)
-{
-}

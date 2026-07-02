@@ -24,20 +24,20 @@ public:
 		int height = 0;
 
 		bool shouldClose = false;
-		// Our software screen buffer
+		// Our software screen buffer  
 		std::vector<unsigned int> pixels;
 
-		// depth buffer
+		// depth buffer  
 		std::vector<float> depthBuffer;
 
 		BITMAPINFO bitmapInfo{};
 
-		// Keyboard state
+		// Keyboard state  
 		bool keys[256] = {};
 		bool keysPressed[256] = {};
 		bool keysReleased[256] = {};
 
-		// Mouse state
+		// Mouse state  
 		double mouseX = 0.0;
 		double mouseY = 0.0;
 
@@ -52,7 +52,10 @@ public:
 		bool mouseButtonsReleased[3] = {};
 
 		int mouseWheelDelta = 0;
-
+		
+		// User pointer for custom data  
+		void* userPointer = nullptr;
+		
 		/*std::unordered_map<int, bool> keyState;
 		std::unordered_map<int, bool> prevKeyState;*/
 
@@ -92,19 +95,18 @@ public:
 	int guiGetKeyReleased(gui_window* window, int keycode);
 
 	void guiGetCursorPos(gui_window* window, double* xpos, double* ypos);
-	void guiGetMouseDelta(gui_window* window, double* dx, double* dy);
 
+	void guiGetMouseDelta(gui_window* window, double* dx, double* dy);
+	int guiGetMouseWheel(gui_window* window);
 	int guiGetMouseButton(gui_window* window, int button);
+	
 	int guiGetMouseButtonPressed(gui_window* window, int button);
 	int guiGetMouseButtonReleased(gui_window* window, int button);
 
-	int guiGetMouseWheel(gui_window* window);
 
 	void guiEndFrame(gui_window* window);
 	
-	// int guiGetKeys(gui_window* window, int keycode);
-	//void guiGetCursorPos(gui_window* window, double* xpos, double* ypos);
-	//int guiGetMouseButton(gui_window* window, int button);
+	
 
 
 

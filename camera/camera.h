@@ -35,6 +35,7 @@ public:
     float Distance = 6.0f;
     float OrbitSensitivity = 0.25f;
     float ZoomSensitivity = 0.5f;
+    float PanSensitivity = 0.005f;
 
 
 
@@ -49,6 +50,7 @@ public:
 
     void ProcessOrbit(float xoffset, float yoffset);
     void ProcessOrbitZoom(float yoffset);
+    void ProcessOrbitPan(float xoffset, float yoffset);
     void UpdateOrbitCamera();
 
 private:

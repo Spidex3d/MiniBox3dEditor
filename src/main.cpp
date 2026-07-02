@@ -32,7 +32,11 @@ int main() {
     app.guiSetWindowIcon(window, L"icon_01.ico");
 
     Camera camera(vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 1.0f, 0.0f));
-    
+    camera.Target = vec3(3.0f, 0.0f, 5.0f);
+    camera.Distance = 6.0f;
+    camera.Yaw = 90.0f;
+    camera.Pitch = 0.0f;
+    camera.UpdateOrbitCamera();
 
     // Default cube
     boXMesh cube =  boXCreateCubeMesh(vec3(3.0f, 0.0f, 5.0f),  vec3(1.5f, 1.5f, 1.5f));
