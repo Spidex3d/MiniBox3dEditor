@@ -164,37 +164,121 @@ void boXGL::boXGLDrawFilledRect(guiWin::gui_window* window, int x, int y, int wi
 		}
 	}
 }
-// ############################################################################################################
-// ########################################### 3d Section #####################################################
-// ############################################################################################################
-
-static bool boXGLProjectPoint(
-    guiWin::gui_window* window,
-    const vec3& point, boXGL::boXScreenVertex& out)
+// ####################################################### Camera Helper ###############################
+static bool boXGLWorldToCamera(
+    const Camera& camera,
+    const vec3& worldPoint,
+    vec3& outCameraPoint)
 {
-    if (!window)
-        return false;
+    vec3 relative = worldPoint - camera.Position;
 
-    // Very simple perspective camera.  
-    // Camera is looking forward along +Z.  
-    const float nearPlane = 0.1f;
-    const float focalLength = 500.0f;
-
-    if (point.z <= nearPlane)
-        return false;
-
-    out.x = static_cast<float>(window->width) * 0.5f +
-        (point.x * focalLength) / point.z;
-
-    out.y = static_cast<float>(window->height) * 0.5f -
-        (point.y * focalLength) / point.z;
-
-    out.z = point.z; // Add depth information to boXScreenVertex.  
+    outCameraPoint.x = dot(relative, camera.Right);
+    outCameraPoint.y = dot(relative, camera.Up);
+    outCameraPoint.z = dot(relative, camera.Front);
 
     return true;
 }
 
-// ####################################################### Camera Helper ###############################
+static bool boXGLClipLineToNearPlane(
+    vec3& a,
+    vec3& b,
+    float nearPlane)
+{
+    bool aInFront = a.z > nearPlane;
+    bool bInFront = b.z > nearPlane;
+
+    // Both points are behind the camera.
+    if (!aInFront && !bInFront)
+        return false;
+
+    // Both points are visible.
+    if (aInFront && bInFront)
+        return true;
+
+    // One point is behind, one point is in front.
+    float t = (nearPlane - a.z) / (b.z - a.z);
+
+    vec3 clippedPoint = a + (b - a) * t;
+
+    if (!aInFront)
+    {
+        a = clippedPoint;
+    }
+    else
+    {
+        b = clippedPoint;
+    }
+
+    return true;
+}
+
+static bool boXGLProjectCameraPoint(
+    guiWin::gui_window* window,
+    const vec3& cameraPoint,
+    boXGL::boXScreenVertex& out)
+{
+    if (!window)
+        return false;
+
+    const float focalLength = 500.0f;
+
+    out.x =
+        static_cast<float>(window->width) * 0.5f +
+        (cameraPoint.x * focalLength) / cameraPoint.z;
+
+    out.y =
+        static_cast<float>(window->height) * 0.5f -
+        (cameraPoint.y * focalLength) / cameraPoint.z;
+
+    out.z = cameraPoint.z;
+
+    return true;
+}
+
+ void boXGL::boXGLDrawLine3D(
+    guiWin::gui_window* window,
+    const Camera& camera,
+    const vec3& startWorld,
+    const vec3& endWorld,
+    float lineSize,
+    vec3 colour)
+{
+    if (!window)
+        return;
+
+    const float nearPlane = 0.1f;
+
+    vec3 a;
+    vec3 b;
+
+    boXGLWorldToCamera(camera, startWorld, a);
+    boXGLWorldToCamera(camera, endWorld, b);
+
+    if (!boXGLClipLineToNearPlane(a, b, nearPlane))
+        return;
+
+    boXGL::boXScreenVertex p0;
+    boXGL::boXScreenVertex p1;
+
+    if (!boXGLProjectCameraPoint(window, a, p0))
+        return;
+
+    if (!boXGLProjectCameraPoint(window, b, p1))
+    
+        return;
+   
+    
+    boXGLDrawLine(
+        window,
+        static_cast<int>(p0.x),
+        static_cast<int>(p0.y),
+        static_cast<int>(p1.x),
+        static_cast<int>(p1.y),
+        lineSize,
+        colour);
+}
+ 
+// ########################################################################
 static bool boXGLProjectPointCamera(
     guiWin::gui_window* window,
     const Camera& camera,
@@ -228,6 +312,128 @@ static bool boXGLProjectPointCamera(
 
     return true;
 }
+
+
+// ########################################### 3d Editor Section #####################################################
+void boXGL::boXGLDrawOriginMarker(guiWin::gui_window* window, const Camera& camera, const vec3& position)
+{
+    if (!window)
+        return;
+
+    boXScreenVertex p;
+
+    if (!boXGLProjectPointCamera(window, camera, position, p))
+        return;
+
+    boXGLDrawCircle(
+        window,
+        static_cast<int>(p.x),
+        static_cast<int>(p.y),
+        6,
+        2.0f,
+        vec3(1.0f, 0.8f, 0.1f));
+}
+void boXGL::boXGLDrawGrid(guiWin::gui_window* window, const Camera& camera, int gridSize, float spacing)
+{
+	if (!window)
+		return;
+    if (!window)
+        return;
+
+    vec3 gridColour(0.28f, 0.28f, 0.28f);
+    vec3 xAxisColour(0.85f, 0.15f, 0.15f); // Red X axis
+    vec3 zAxisColour(0.15f, 0.35f, 0.95f); // Blue Z axis
+
+    float halfSize = static_cast<float>(gridSize) * spacing;
+
+    // Lines parallel to X axis.
+    // These move along Z.
+    for (int i = -gridSize; i <= gridSize; ++i)
+    {
+        float z = static_cast<float>(i) * spacing;
+
+        vec3 start(-halfSize, 0.0f, z);
+        vec3 end(halfSize, 0.0f, z);
+
+        vec3 colour = gridColour;
+        float lineSize = 1.0f;
+
+        // Z = 0 is the X axis.
+        if (i == 0)
+        {
+            colour = xAxisColour;
+            lineSize = 2.0f;
+        }
+
+        boXGLDrawLine3D(
+            window,
+            camera,
+            start,
+            end,
+            lineSize,
+            colour);
+    }
+
+    // Lines parallel to Z axis.
+    // These move along X.
+    for (int i = -gridSize; i <= gridSize; ++i)
+    {
+        float x = static_cast<float>(i) * spacing;
+
+        vec3 start(x, 0.0f, -halfSize);
+        vec3 end(x, 0.0f, halfSize);
+
+        vec3 colour = gridColour;
+        float lineSize = 1.0f;
+
+        // X = 0 is the Z axis.
+        if (i == 0)
+        {
+            colour = zAxisColour;
+            lineSize = 2.0f;
+        }
+
+        boXGLDrawLine3D(
+            window,
+            camera,
+            start,
+            end,
+            lineSize,
+            colour);
+    }
+
+}
+// ############################################################################################################
+// ########################################### 3d Section #####################################################
+// ############################################################################################################
+
+static bool boXGLProjectPoint(
+    guiWin::gui_window* window,
+    const vec3& point, boXGL::boXScreenVertex& out)
+{
+    if (!window)
+        return false;
+
+    // Very simple perspective camera.  
+    // Camera is looking forward along +Z.  
+    const float nearPlane = 0.1f;
+    const float focalLength = 500.0f;
+
+    if (point.z <= nearPlane)
+        return false;
+
+    out.x = static_cast<float>(window->width) * 0.5f +
+        (point.x * focalLength) / point.z;
+
+    out.y = static_cast<float>(window->height) * 0.5f -
+        (point.y * focalLength) / point.z;
+
+    out.z = point.z; // Add depth information to boXScreenVertex.  
+
+    return true;
+}
+
+
 
 
 // Update the boXGLDrawCube function to use boXScreenVertex instead of vec2 for the 'projected' array.  

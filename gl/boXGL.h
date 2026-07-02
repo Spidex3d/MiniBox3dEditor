@@ -25,6 +25,12 @@ public:
 	void boXGLDrawRect(guiWin::gui_window* window, int x, int y, int width, int height, float lineSize, vec3 colour);
 	void boXGLDrawFilledRect(guiWin::gui_window* window, int x, int y, int width, int height, vec3 colour);
 	
+	// ########################################### 3d Editor #####################################################
+
+	void boXGLDrawGrid(guiWin::gui_window* window, const Camera& camera, int gridSize, float spacing);
+	void boXGLDrawLine3D(guiWin::gui_window* window, const Camera& camera, const vec3& startWorld, const vec3& endWorld, float lineSize, vec3 colour);
+	void boXGLDrawOriginMarker(guiWin::gui_window* window, const Camera& camera, const vec3& position);
+	
 	// ############################################################################################################
 	// ########################################### 3d Section #####################################################
 	// ############################################################################################################
@@ -56,4 +62,5 @@ public:
 	void boXGLDrawMesh(guiWin::gui_window* window, const Camera& camera, const boXMesh& mesh);
 
 private:
+
 };

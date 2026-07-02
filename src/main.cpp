@@ -8,6 +8,10 @@
 #include <editorInput.h>
 
 // 24/06/26 A name for our graphics library is boXGL !!
+// 1. Object Mode selection first
+// 2. Click near projected object origin or bounding box
+// 3. Highlight selected object
+// 4. Then move to vertex / edge / face selection//4. Then selection
 
 int main() {
 
@@ -32,14 +36,15 @@ int main() {
     app.guiSetWindowIcon(window, L"icon_01.ico");
 
     Camera camera(vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 1.0f, 0.0f));
-    camera.Target = vec3(3.0f, 0.0f, 5.0f);
-    camera.Distance = 6.0f;
-    camera.Yaw = 90.0f;
-    camera.Pitch = 0.0f;
+    camera.Target = vec3(0.0f, 4.0f, -5.0f);
+    camera.Distance = 20.0f;
+    //camera.Yaw = 90.0f;
+    camera.Yaw = 45.0f;
+    camera.Pitch = -25.0f;
     camera.UpdateOrbitCamera();
 
     // Default cube
-    boXMesh cube =  boXCreateCubeMesh(vec3(3.0f, 0.0f, 5.0f),  vec3(1.5f, 1.5f, 1.5f));
+    boXMesh cube =  boXCreateCubeMesh(vec3(0.0f, 0.75f, 0.0f),  vec3(1.5f, 1.5f, 1.5f));
 
     while (!app.guiWindowShouldClose(window))
     {
@@ -47,24 +52,17 @@ int main() {
 
         app.guiPollEvents(window);
               
-		in.processInput(app, window, camera);// process keyboard input for camera movement
-
-		
-        // mouse input
-        double mx, my;
-        app.guiGetCursorPos(window, &mx, &my);
-        if (app.guiGetMouseButton(window, GLWIN_MOUSE_BUTTON_LEFT) == GLWIN_PRESS) {
-            BOX_LOG_INFO("Mouse position: (" << mx << ", " << my << ")");
-        }
+		in.processInput(app, window, camera);// process keyboard & mouse input for camera movement
 
         // set the color to gray
         gl.boXGLClearColor(window, 28, 28, 28);
 		// clear the depth buffer
         gl.boXGLClearDepth(window);     
         
-
-        // draw a cube and look at it with the new camera
+		gl.boXGLDrawGrid(window, camera, 20, 1.0f); // draw a grid with size 20 and spacing 1.0f
+        // draw a default cube and look at it with the new camera
         gl.boXGLDrawMesh(window, camera, cube);
+        gl.boXGLDrawOriginMarker(window, camera, vec3(0.0f, 0.75f, 0.0f));
 
 		app.guiPresent(window); // set the background color and draw the cube
 
