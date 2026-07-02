@@ -20,7 +20,7 @@ void boXGL::boXGLClearColor(guiWin::gui_window* window, unsigned char r, unsigne
         colour);
 }
 
-void boXGL::boXGLDrawPixel(guiWin::gui_window* window, int x, int y, Vec3 colour)
+void boXGL::boXGLDrawPixel(guiWin::gui_window* window, int x, int y, vec3 colour)
 {
     if (!window)
         return;
@@ -31,17 +31,17 @@ void boXGL::boXGLDrawPixel(guiWin::gui_window* window, int x, int y, Vec3 colour
         return;
     }
 
-    unsigned int pixelColour = Vec3ToColour(colour);
+    unsigned int pixelColour = vec3ToColour(colour);
 
     window->pixels[y * window->width + x] = pixelColour;
 }
 
-void boXGL::boXGLDrawLine(guiWin::gui_window* window, int sx, int sy, int ex, int ey, float lineSize, Vec3 colour)
+void boXGL::boXGLDrawLine(guiWin::gui_window* window, int sx, int sy, int ex, int ey, float lineSize, vec3 colour)
 {
     if (!window)
         return;
 
-    unsigned int pixelColour = Vec3ToColour(colour);
+    unsigned int pixelColour = vec3ToColour(colour);
 
     int dx = std::abs(ex - sx);
     int sxStep = sx < ex ? 1 : -1;
@@ -95,11 +95,11 @@ void boXGL::boXGLDrawLine(guiWin::gui_window* window, int sx, int sy, int ex, in
     }
 }
 
-void boXGL::boXGLDrawCircle(guiWin::gui_window* window, int centerX, int centerY, int radius, float lineSize, Vec3 colour)
+void boXGL::boXGLDrawCircle(guiWin::gui_window* window, int centerX, int centerY, int radius, float lineSize, vec3 colour)
 {
 	if (!window)
 		return;
-	unsigned int pixelColour = Vec3ToColour(colour);
+	unsigned int pixelColour = vec3ToColour(colour);
 	int thickness = static_cast<int>(lineSize);
 	if (thickness < 1)
 		thickness = 1;
@@ -124,11 +124,11 @@ void boXGL::boXGLDrawCircle(guiWin::gui_window* window, int centerX, int centerY
 	}
 }
 
-void boXGL::boXGLDrawRect(guiWin::gui_window* window, int x, int y, int width, int height, float lineSize, Vec3 colour)
+void boXGL::boXGLDrawRect(guiWin::gui_window* window, int x, int y, int width, int height, float lineSize, vec3 colour)
 {
 	if (!window)
 		return;
-	unsigned int pixelColour = Vec3ToColour(colour);
+	unsigned int pixelColour = vec3ToColour(colour);
 	int thickness = static_cast<int>(lineSize);
 	if (thickness < 1)
 		thickness = 1;
@@ -146,11 +146,11 @@ void boXGL::boXGLDrawRect(guiWin::gui_window* window, int x, int y, int width, i
 	}
 }
 
-void boXGL::boXGLDrawFilledRect(guiWin::gui_window* window, int x, int y, int width, int height, Vec3 colour)
+void boXGL::boXGLDrawFilledRect(guiWin::gui_window* window, int x, int y, int width, int height, vec3 colour)
 {
 	if (!window)
 		return;
-	unsigned int pixelColour = Vec3ToColour(colour);
+	unsigned int pixelColour = vec3ToColour(colour);
 	for (int py = y; py < y + height; ++py)
 	{
 		for (int px = x; px < x + width; ++px)
@@ -169,7 +169,7 @@ void boXGL::boXGLDrawFilledRect(guiWin::gui_window* window, int x, int y, int wi
 
 static bool boXGLProjectPoint(
     guiWin::gui_window* window,
-    const Vec3& point, boXGL::boXScreenVertex& out)
+    const vec3& point, boXGL::boXScreenVertex& out)
 {
     if (!window)
         return false;
@@ -193,27 +193,27 @@ static bool boXGLProjectPoint(
     return true;
 }
 
-// Update the boXGLDrawCube function to use boXScreenVertex instead of Vec2 for the 'projected' array.  
-void boXGL::boXGLDrawCube(guiWin::gui_window* window, Vec3 position, Vec3 size, Vec3 colour)
+// Update the boXGLDrawCube function to use boXScreenVertex instead of vec2 for the 'projected' array.  
+void boXGL::boXGLDrawCube(guiWin::gui_window* window, vec3 position, vec3 size, vec3 colour)
 {
     if (!window)
         return;
 
-    Vec3 halfSize = size * 0.5f;
+    vec3 halfSize = size * 0.5f;
 
-    Vec3 vertices[8] =
+    vec3 vertices[8] =
     {
         // Back face  
-        Vec3(-halfSize.x, -halfSize.y, -halfSize.z),
-        Vec3(halfSize.x, -halfSize.y, -halfSize.z),
-        Vec3(halfSize.x,  halfSize.y, -halfSize.z),
-        Vec3(-halfSize.x,  halfSize.y, -halfSize.z),
+        vec3(-halfSize.x, -halfSize.y, -halfSize.z),
+        vec3(halfSize.x, -halfSize.y, -halfSize.z),
+        vec3(halfSize.x,  halfSize.y, -halfSize.z),
+        vec3(-halfSize.x,  halfSize.y, -halfSize.z),
 
         // Front face  
-        Vec3(-halfSize.x, -halfSize.y,  halfSize.z),
-        Vec3(halfSize.x, -halfSize.y,  halfSize.z),
-        Vec3(halfSize.x,  halfSize.y,  halfSize.z),
-        Vec3(-halfSize.x,  halfSize.y,  halfSize.z)
+        vec3(-halfSize.x, -halfSize.y,  halfSize.z),
+        vec3(halfSize.x, -halfSize.y,  halfSize.z),
+        vec3(halfSize.x,  halfSize.y,  halfSize.z),
+        vec3(-halfSize.x,  halfSize.y,  halfSize.z)
     };
 
     // Move cube into world position  
@@ -265,7 +265,7 @@ void boXGL::boXGLDrawCube(guiWin::gui_window* window, Vec3 position, Vec3 size, 
 }
 
 
-static float boXGLEdgeFunction(const Vec2& a, const Vec2& b, const Vec2& p)
+static float boXGLEdgeFunction(const vec2& a, const vec2& b, const vec2& p)
 {
     return
         (p.x - a.x) * (b.y - a.y) -
@@ -273,7 +273,7 @@ static float boXGLEdgeFunction(const Vec2& a, const Vec2& b, const Vec2& p)
 }
 
 
-void boXGL::boXGLDrawFilledTriangle(guiWin::gui_window* window, Vec2 a, Vec2 b, Vec2 c, Vec3 colour)
+void boXGL::boXGLDrawFilledTriangle(guiWin::gui_window* window, vec2 a, vec2 b, vec2 c, vec3 colour)
 {
     if (!window)
         return;
@@ -295,13 +295,13 @@ void boXGL::boXGLDrawFilledTriangle(guiWin::gui_window* window, Vec2 a, Vec2 b, 
     if (std::abs(area) <= 0.00001f)
         return;
 
-    unsigned int pixelColour = Vec3ToColour(colour);
+    unsigned int pixelColour = vec3ToColour(colour);
 
     for (int y = minY; y <= maxY; ++y)
     {
         for (int x = minX; x <= maxX; ++x)
         {
-            Vec2 p(
+            vec2 p(
                 static_cast<float>(x) + 0.5f,
                 static_cast<float>(y) + 0.5f
             );
@@ -322,7 +322,7 @@ void boXGL::boXGLDrawFilledTriangle(guiWin::gui_window* window, Vec2 a, Vec2 b, 
     }
 }
 
-void boXGL::boXGLDrawPixelDepth(guiWin::gui_window* window, int x, int y, float depth, Vec3 colour)
+void boXGL::boXGLDrawPixelDepth(guiWin::gui_window* window, int x, int y, float depth, vec3 colour)
 {
     if (!window)
         return;
@@ -335,7 +335,7 @@ void boXGL::boXGLDrawPixelDepth(guiWin::gui_window* window, int x, int y, float 
     if (depth < window->depthBuffer[index])
     {
         window->depthBuffer[index] = depth;
-        unsigned int pixelColour = Vec3ToColour(colour);
+        unsigned int pixelColour = vec3ToColour(colour);
         window->pixels[index] = pixelColour;
     }
 }
@@ -348,7 +348,7 @@ void boXGL::boXGLClearDepth(guiWin::gui_window* window)
 }
 
 
-void boXGL::boXGLDrawFilledTriangleDepth(guiWin::gui_window* window, boXScreenVertex a, boXScreenVertex b, boXScreenVertex c, Vec3 colour)
+void boXGL::boXGLDrawFilledTriangleDepth(guiWin::gui_window* window, boXScreenVertex a, boXScreenVertex b, boXScreenVertex c, vec3 colour)
 {
     if (!window)
         return;
@@ -367,9 +367,9 @@ void boXGL::boXGLDrawFilledTriangleDepth(guiWin::gui_window* window, boXScreenVe
 
     float area =
         boXGLEdgeFunction(
-            Vec2(a.x, a.y),
-            Vec2(b.x, b.y),
-            Vec2(c.x, c.y));
+            vec2(a.x, a.y),
+            vec2(b.x, b.y),
+            vec2(c.x, c.y));
 
     if (std::abs(area) <= 0.00001f)
         return;
@@ -378,26 +378,26 @@ void boXGL::boXGLDrawFilledTriangleDepth(guiWin::gui_window* window, boXScreenVe
     {
         for (int x = minX; x <= maxX; ++x)
         {
-            Vec2 p(
+            vec2 p(
                 static_cast<float>(x) + 0.5f,
                 static_cast<float>(y) + 0.5f);
 
             float w0 =
                 boXGLEdgeFunction(
-                    Vec2(b.x, b.y),
-                    Vec2(c.x, c.y),
+                    vec2(b.x, b.y),
+                    vec2(c.x, c.y),
                     p);
 
             float w1 =
                 boXGLEdgeFunction(
-                    Vec2(c.x, c.y),
-                    Vec2(a.x, a.y),
+                    vec2(c.x, c.y),
+                    vec2(a.x, a.y),
                     p);
 
             float w2 =
                 boXGLEdgeFunction(
-                    Vec2(a.x, a.y),
-                    Vec2(b.x, b.y),
+                    vec2(a.x, a.y),
+                    vec2(b.x, b.y),
                     p);
 
             bool inside =
@@ -425,6 +425,13 @@ void boXGL::boXGLDrawFilledTriangleDepth(guiWin::gui_window* window, boXScreenVe
         }
     }
 }
+// Depth buffer management for 3D rendering
+void boXGL::boXGLClearDepthBuffer(guiWin::gui_window* window)
+{
+    if (!window)
+        return;
+    std::fill(window->depthBuffer.begin(), window->depthBuffer.end(), std::numeric_limits<float>::infinity());
+}
 
 
 
@@ -435,13 +442,13 @@ void boXGL::boXGLDrawMeshFaces(guiWin::gui_window* window, const boXMesh& mesh)
 
     for (const boXFace& face : mesh.faces)
     {
-        //Vec2 p0, p1, p2, p3;
+        //vec2 p0, p1, p2, p3;
         boXScreenVertex p0, p1, p2, p3;
 
-        const Vec3& v0 = mesh.vertices[face.v0].position;
-        const Vec3& v1 = mesh.vertices[face.v1].position;
-        const Vec3& v2 = mesh.vertices[face.v2].position;
-        const Vec3& v3 = mesh.vertices[face.v3].position;
+        const vec3& v0 = mesh.vertices[face.v0].position;
+        const vec3& v1 = mesh.vertices[face.v1].position;
+        const vec3& v2 = mesh.vertices[face.v2].position;
+        const vec3& v3 = mesh.vertices[face.v3].position;
 
        /* if (!boXGLProjectPointDepth(window, v0, p0)) continue;
         if (!boXGLProjectPointDepth(window, v1, p1)) continue;
@@ -461,15 +468,15 @@ void boXGL::boXGLDrawMeshFaces(guiWin::gui_window* window, const boXMesh& mesh)
     }
 }
 
-void boXGL::boXGLDrawMeshEdges(guiWin::gui_window* window, const boXMesh& mesh, Vec3 colour)
+void boXGL::boXGLDrawMeshEdges(guiWin::gui_window* window, const boXMesh& mesh, vec3 colour)
 {
     if (!window)
         return;
 
     for (const boXEdge& edge : mesh.edges)
     {
-        const Vec3& v0 = mesh.vertices[edge.v0].position;
-        const Vec3& v1 = mesh.vertices[edge.v1].position;
+        const vec3& v0 = mesh.vertices[edge.v0].position;
+        const vec3& v1 = mesh.vertices[edge.v1].position;
 
         boXScreenVertex p0;
         boXScreenVertex p1;
@@ -480,8 +487,8 @@ void boXGL::boXGLDrawMeshEdges(guiWin::gui_window* window, const boXMesh& mesh, 
         if (!boXGLProjectPoint(window, v1, p1))
             continue;
 
-        Vec3 edgeColour = edge.selected
-            ? Vec3(1.0f, 0.8f, 0.1f)
+        vec3 edgeColour = edge.selected
+            ? vec3(1.0f, 0.8f, 0.1f)
             : colour;
 
         float lineSize = edge.selected ? 3.0f : 1.0f;
@@ -497,7 +504,7 @@ void boXGL::boXGLDrawMeshEdges(guiWin::gui_window* window, const boXMesh& mesh, 
     }
 }
 
-void boXGL::boXGLDrawMeshVertices(guiWin::gui_window* window, const boXMesh& mesh, Vec3 colour)
+void boXGL::boXGLDrawMeshVertices(guiWin::gui_window* window, const boXMesh& mesh, vec3 colour)
 {
     if (!window)
         return;
@@ -509,8 +516,8 @@ void boXGL::boXGLDrawMeshVertices(guiWin::gui_window* window, const boXMesh& mes
         if (!boXGLProjectPoint(window, vertex.position, p))
             continue;
 
-        Vec3 drawColour = vertex.selected
-            ? Vec3(1.0f, 0.8f, 0.1f)
+        vec3 drawColour = vertex.selected
+            ? vec3(1.0f, 0.8f, 0.1f)
             : colour;
 
         float radius = vertex.selected ? 5.0f : 3.0f;
@@ -532,13 +539,13 @@ void boXGL::boXGLDrawMesh(guiWin::gui_window* window, const boXMesh& mesh)
     boXGLDrawMeshEdges(
         window,
         mesh,
-        Vec3(0.05f, 0.05f, 0.05f));
+        vec3(0.05f, 0.05f, 0.05f));
 
     // 3. Draw vertices last
     boXGLDrawMeshVertices(
         window,
         mesh,
-        Vec3(0.95f, 0.95f, 0.95f));
+        vec3(0.95f, 0.95f, 0.95f));
 }
 
 

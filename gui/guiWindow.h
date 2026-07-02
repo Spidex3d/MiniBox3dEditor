@@ -6,7 +6,7 @@
 #include <windows.h>
 #include <vector>
 #include <cstdint>
-#include <unordered_map>
+//#include <unordered_map>
 #include <boXM\boXM.h>
 
 
@@ -32,8 +32,33 @@ public:
 
 		BITMAPINFO bitmapInfo{};
 
-		std::unordered_map<int, bool> keyState;
-		std::unordered_map<int, bool> prevKeyState;
+		// Keyboard state
+		bool keys[256] = {};
+		bool keysPressed[256] = {};
+		bool keysReleased[256] = {};
+
+		// Mouse state
+		double mouseX = 0.0;
+		double mouseY = 0.0;
+
+		double lastMouseX = 0.0;
+		double lastMouseY = 0.0;
+
+		double mouseDeltaX = 0.0;
+		double mouseDeltaY = 0.0;
+
+		bool mouseButtons[3] = {};
+		bool mouseButtonsPressed[3] = {};
+		bool mouseButtonsReleased[3] = {};
+
+		int mouseWheelDelta = 0;
+
+		/*std::unordered_map<int, bool> keyState;
+		std::unordered_map<int, bool> prevKeyState;*/
+
+		//// mouse state
+		//double mouseX = 0.0, mouseY = 0.0;
+		//bool mouseButtons[3] = { false, false, false };
 	};
 	
 public:
@@ -52,11 +77,6 @@ public:
 
 	void guiPollEvents(gui_window* window);
 
-	void boXGLClearDepthBuffer(gui_window* window);
-	
-	void boXGLDrawPixelDepth(gui_window* window, int x, int y, float depth, Vec3 colour);
-
-	
 	void guiPresent(gui_window* window); //send the color to the screen
 	
 	// Window icon 
@@ -68,9 +88,25 @@ public:
 	// ############################################ Keyboard and mouse input ##########################################
 	// ################################################################################################################
 	int guiGetKeys(gui_window* window, int keycode);
-	int guiGetMouseButton(gui_window* window, int button);
+	int guiGetKeyPressed(gui_window* window, int keycode);
+	int guiGetKeyReleased(gui_window* window, int keycode);
+
 	void guiGetCursorPos(gui_window* window, double* xpos, double* ypos);
-	// ################################################################################################################
+	void guiGetMouseDelta(gui_window* window, double* dx, double* dy);
+
+	int guiGetMouseButton(gui_window* window, int button);
+	int guiGetMouseButtonPressed(gui_window* window, int button);
+	int guiGetMouseButtonReleased(gui_window* window, int button);
+
+	int guiGetMouseWheel(gui_window* window);
+
+	void guiEndFrame(gui_window* window);
+	
+	// int guiGetKeys(gui_window* window, int keycode);
+	//void guiGetCursorPos(gui_window* window, double* xpos, double* ypos);
+	//int guiGetMouseButton(gui_window* window, int button);
+
+
 
 
 

@@ -30,6 +30,10 @@
 
 // Action keys Enter, Space, Arrows, etc.
 #define GLWIN_RETURN                  13 //0x0D
+
+
+#define GLWIN_TAB					  9 // 0x09
+
 #define GLWIN_SPACE                   32 //0x20
 
 #define GLWIN_LEFT                    37 //0x25
@@ -64,6 +68,18 @@
 #define GLWIN_KEY_X                   88
 #define GLWIN_KEY_Y                   89
 #define GLWIN_KEY_Z                   90
+
+// Number keys 48 to 57
+#define GLWIN_KEY_0                   48 //0x30
+#define GLWIN_KEY_1					  49 //0x31
+#define GLWIN_KEY_2					  50 //0x32
+#define GLWIN_KEY_3					  51 //0x33
+#define GLWIN_KEY_4					  52 //0x34
+#define GLWIN_KEY_5					  53 //0x35
+#define GLWIN_KEY_6					  54 //0x36
+#define GLWIN_KEY_7					  55 //0x37
+#define GLWIN_KEY_8					  56 //0x38
+#define GLWIN_KEY_9					  57 //0x39
 
 // Mouse buttons				     
 #define GLWIN_MOUSE_BUTTON_LEFT       0
