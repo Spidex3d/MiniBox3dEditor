@@ -5,7 +5,6 @@
 #include <editorState.h>
 
 
-//Camera camera(vec3(0.0f, 0.0f, 5.0f));
 
 bool firstMouse = true;
 bool mouse = true;

@@ -24,13 +24,13 @@
     <ClCompile Include="gl\boXGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gui\guiGui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="camera\camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="editor\editorInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\guiUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,7 +56,7 @@
     <ClInclude Include="gui\guiWinDeffs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gui\guiGui.h">
+    <ClInclude Include="gui\guiUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="editor\editorState.h">

@@ -355,6 +355,7 @@ LRESULT CALLBACK guiWin::WindowProc(
 
         return 0;
     }
+    
     case WM_MOUSEMOVE:
     {
         if (window)
@@ -374,41 +375,90 @@ LRESULT CALLBACK guiWin::WindowProc(
 
         return 0;
     }
-    if (window)
-    {
-        if (!window->mouseButtons[GLWIN_MOUSE_BUTTON_LEFT])
-            window->mouseButtonsPressed[GLWIN_MOUSE_BUTTON_LEFT] = true;
 
-        window->mouseButtons[GLWIN_MOUSE_BUTTON_LEFT] = true;
-        SetCapture(hwnd);
-    }
+    case WM_LBUTTONDOWN:
+    {
+        if (window)
+        {
+            if (!window->mouseButtons[GLWIN_MOUSE_BUTTON_LEFT])
+            {
+                window->mouseButtonsPressed[GLWIN_MOUSE_BUTTON_LEFT] = true;
+            }
+
+            window->mouseButtons[GLWIN_MOUSE_BUTTON_LEFT] = true;
+            SetCapture(hwnd);
+        }
 
         return 0;
-    
+    }
 
     case WM_LBUTTONUP:
-
-    if (window)
     {
-        window->mouseButtons[GLWIN_MOUSE_BUTTON_LEFT] = false;
-        window->mouseButtonsReleased[GLWIN_MOUSE_BUTTON_LEFT] = true;
-        ReleaseCapture();
-    }
+        if (window)
+        {
+            window->mouseButtons[GLWIN_MOUSE_BUTTON_LEFT] = false;
+            window->mouseButtonsReleased[GLWIN_MOUSE_BUTTON_LEFT] = true;
+            ReleaseCapture();
+        }
 
         return 0;
+    }
 
     case WM_RBUTTONDOWN:
-        if (window) window->mouseButtons[GLWIN_MOUSE_BUTTON_RIGHT] = true;
-        break;
+    {
+        if (window)
+        {
+            if (!window->mouseButtons[GLWIN_MOUSE_BUTTON_RIGHT])
+            {
+                window->mouseButtonsPressed[GLWIN_MOUSE_BUTTON_RIGHT] = true;
+            }
+
+            window->mouseButtons[GLWIN_MOUSE_BUTTON_RIGHT] = true;
+            SetCapture(hwnd);
+        }
+
+        return 0;
+    }
+
     case WM_RBUTTONUP:
-        if (window) window->mouseButtons[GLWIN_MOUSE_BUTTON_RIGHT] = false;
-        break;
+    {
+        if (window)
+        {
+            window->mouseButtons[GLWIN_MOUSE_BUTTON_RIGHT] = false;
+            window->mouseButtonsReleased[GLWIN_MOUSE_BUTTON_RIGHT] = true;
+            ReleaseCapture();
+        }
+
+        return 0;
+    }
+
     case WM_MBUTTONDOWN:
-        if (window) window->mouseButtons[GLWIN_MOUSE_BUTTON_MIDDLE] = true;
-        break;
+    {
+        if (window)
+        {
+            if (!window->mouseButtons[GLWIN_MOUSE_BUTTON_MIDDLE])
+            {
+                window->mouseButtonsPressed[GLWIN_MOUSE_BUTTON_MIDDLE] = true;
+            }
+
+            window->mouseButtons[GLWIN_MOUSE_BUTTON_MIDDLE] = true;
+            SetCapture(hwnd);
+        }
+
+        return 0;
+    }
+
     case WM_MBUTTONUP:
-        if (window) window->mouseButtons[GLWIN_MOUSE_BUTTON_MIDDLE] = false;
-        break;
+    {
+        if (window)
+        {
+            window->mouseButtons[GLWIN_MOUSE_BUTTON_MIDDLE] = false;
+            window->mouseButtonsReleased[GLWIN_MOUSE_BUTTON_MIDDLE] = true;
+            ReleaseCapture();
+        }
+
+        return 0;
+    }
     case WM_MOUSEWHEEL:
     {
         if (window)

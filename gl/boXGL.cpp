@@ -787,4 +787,28 @@ void boXGL::boXGLDrawMesh(guiWin::gui_window* window, const Camera& camera, cons
         vec3(0.95f, 0.95f, 0.95f));
 }
 
+bool boXGL::boXGLProjectWorldToScreen(guiWin::gui_window* window, const Camera& camera, const vec3& worldPoint, boXScreenVertex& out)
+{
+    return boXGLProjectPointCamera(window, camera, worldPoint, out);
+}
+
+void boXGL::boXGLDrawOriginMarker(guiWin::gui_window* window, const Camera& camera, const vec3& position, vec3 colour, int radius)
+{
+    if (!window)
+        return;
+
+    boXScreenVertex p;
+
+    if (!boXGLProjectWorldToScreen(window, camera, position, p))
+        return;
+
+    boXGLDrawCircle(
+        window,
+        static_cast<int>(p.x),
+        static_cast<int>(p.y),
+        radius,
+        2.0f,
+        colour);
+}
+
 

@@ -60,6 +60,10 @@ public:
 	void boXGLDrawMeshVertices(guiWin::gui_window* window, const Camera& camera, const boXMesh& mesh, vec3 colour);
 	
 	void boXGLDrawMesh(guiWin::gui_window* window, const Camera& camera, const boXMesh& mesh);
+	// ########################################### 3d Object Section #####################################################
+
+	bool boXGLProjectWorldToScreen(guiWin::gui_window* window, const Camera& camera, const vec3& worldPoint, boXScreenVertex& out);
+	void boXGLDrawOriginMarker(guiWin::gui_window* window, const Camera& camera, const vec3& position, vec3 colour, int radius);
 
 private:
 
