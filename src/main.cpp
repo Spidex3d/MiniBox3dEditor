@@ -109,7 +109,6 @@ int main() {
 
         // draw a default cube and look at it with the new camera
         gl.boXGLDrawMesh(window, camera, cube);
-        //gl.boXGLDrawOriginMarker(window, camera, vec3(0.0f, 0.75f, 0.0f));
         gl.boXGLDrawOriginMarker(window, camera, cubePosition, cubeSelected ? vec3(1.0f, 0.9f, 0.1f) : vec3(1.0f, 0.7f, 0.1f),
             cubeSelected ? 10 : 6);
 

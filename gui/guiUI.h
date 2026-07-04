@@ -24,6 +24,7 @@ struct UIwindow
 
 
     float titleBarHeight = 28.0f;
+    float closeButtonSize = 22.0f;
   
     bool dragging = false;
     float dragOffsetX = 0.0f;
@@ -43,10 +44,11 @@ UIwindow UIctx;
 
     void UInewFrame(guiWin& app, guiWin::gui_window* window, boXGL& gl);
 
+    
+
     void UIbegin(const char* title, bool* p_open = nullptr, int UIid = 0);
 
     void End();
-   
     bool WidgetButton(const char* label, float x, float y, float width, float height);
 
     //bool WidgetColorBoxLabel(const char* label, float* r, float* g, float* b, float w = 40.0f, float h = 20.0f);

@@ -4,6 +4,8 @@
 #include <cmath>
 #include <limits>
 
+#include "boXGLText.h"
+
 
 void boXGL::boXGLClearColor(guiWin::gui_window* window, unsigned char r, unsigned char g, unsigned char b)
 {
@@ -332,6 +334,56 @@ void boXGL::boXGLDrawOriginMarker(guiWin::gui_window* window, const Camera& came
         6,
         2.0f,
         vec3(1.0f, 0.8f, 0.1f));
+}
+void boXGL::boXGLDrawText(guiWin::gui_window* window, int x, int y, const char* text, vec3 colour, int scale)
+{
+    if (!window || !text)
+        return;
+
+    if (scale < 1)
+        scale = 1;
+
+    int cursorX = x;
+    int cursorY = y;
+
+    for (const char* c = text; *c; ++c)
+    {
+        if (*c == '\n')
+        {
+            cursorX = x;
+            cursorY += 8 * scale;
+            continue;
+        }
+
+        unsigned char ch = static_cast<unsigned char>(*c);
+
+        if (ch < 32 || ch > 127)
+        {
+            cursorX += 6 * scale;
+            continue;
+        }
+
+        const unsigned char* glyph = font5x7[ch - 32];
+
+        for (int row = 0; row < 7; ++row)
+        {
+            for (int col = 0; col < 5; ++col)
+            {
+                if (glyph[row] & (1 << (4 - col)))
+                {
+                    boXGLDrawFilledRect(
+                        window,
+                        cursorX + col * scale,
+                        cursorY + row * scale,
+                        scale,
+                        scale,
+                        colour);
+                }
+            }
+        }
+
+        cursorX += 6 * scale;
+    }
 }
 void boXGL::boXGLDrawGrid(guiWin::gui_window* window, const Camera& camera, int gridSize, float spacing)
 {

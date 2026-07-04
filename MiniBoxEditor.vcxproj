@@ -143,6 +143,7 @@
     <ClInclude Include="editor\editorInput.h" />
     <ClInclude Include="editor\editorState.h" />
     <ClInclude Include="gl\boXGL.h" />
+    <ClInclude Include="gl\boXGLText.h" />
     <ClInclude Include="gl\mesh\boxMesh.h" />
     <ClInclude Include="gui\guiUI.h" />
     <ClInclude Include="gui\guiWinDeffs.h" />

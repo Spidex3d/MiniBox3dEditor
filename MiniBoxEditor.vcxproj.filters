@@ -68,5 +68,8 @@
     <ClInclude Include="editor\editorInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="gl\boXGLText.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
