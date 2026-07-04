@@ -8,6 +8,7 @@
 #include <editorInput.h>
 #include <guiUI.h>
 
+
 // 24/06/26 A name for our graphics library is boXGL !!
 // 1. Object Mode selection first
 // 2. Click near projected object origin or bounding box
@@ -112,19 +113,7 @@ int main() {
         gl.boXGLDrawOriginMarker(window, camera, cubePosition, cubeSelected ? vec3(1.0f, 0.9f, 0.1f) : vec3(1.0f, 0.7f, 0.1f),
             cubeSelected ? 10 : 6);
 
-        /*double mx = 0.0;
-        double my = 0.0;
-
-        app.guiGetCursorPos(window, &mx, &my);
-
-        bool leftDown =
-            app.guiGetMouseButton(window, GLWIN_MOUSE_BUTTON_LEFT) == GLWIN_PRESS;
-
-        bool leftPressed =
-            app.guiGetMouseButtonPressed(window, GLWIN_MOUSE_BUTTON_LEFT) == GLWIN_PRESS;
-
-        bool leftReleased =
-            app.guiGetMouseButtonReleased(window, GLWIN_MOUSE_BUTTON_LEFT) == GLWIN_PRESS;*/
+        
 
         ui.UInewFrame(app, window, gl);
 
@@ -132,7 +121,7 @@ int main() {
 
         ui.UIbegin("Demo Window", &demoWindowOpen, 1);
 
-        if (ui.UIbutton("OK", 20.0f, 50.0f, 80.0f, 28.0f))
+        if (ui.WidgetButton("OK", 20.0f, 50.0f, 80.0f, 28.0f))
         {
             BOX_LOG_INFO("OK button clicked");
         }

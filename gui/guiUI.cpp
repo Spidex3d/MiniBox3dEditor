@@ -1,5 +1,6 @@
 #include "guiUI.h"
 
+
 void guiUI::UInewFrame(
     guiWin& app,
     guiWin::gui_window* window,
@@ -37,6 +38,7 @@ void guiUI::UInewFrame(
 
     m_currentWindow = nullptr;
 }
+
 
 bool guiUI::IsMouseInside(
     float x,
@@ -90,6 +92,9 @@ void guiUI::UIbegin(
     bool* p_open,
     int UIid)
 {
+
+    
+
     if (!m_window || !m_gl)
         return;
 
@@ -112,6 +117,37 @@ void guiUI::UIbegin(
             win->y,
             win->width,
             win->height);
+	// ########################### new dragging code
+    bool titleBarHovered =
+        IsMouseInside(
+            win->x,
+            win->y,
+            win->width,
+            win->titleBarHeight);
+
+    // Start dragging when left button is first pressed on title bar
+    if (titleBarHovered && m_mousePressed)
+    {
+        win->dragging = true;
+
+        win->dragOffsetX = m_mouseX - win->x;
+        win->dragOffsetY = m_mouseY - win->y;
+    }
+
+    // Stop dragging when left button is released
+    if (m_mouseReleased)
+    {
+        win->dragging = false;
+    }
+
+    // Move while dragging
+    if (win->dragging && m_mouseDown)
+    {
+        win->x = m_mouseX - win->dragOffsetX;
+        win->y = m_mouseY - win->dragOffsetY;
+    }
+
+	// ##################################### end new dragging code
 
     m_gl->boXGLDrawFilledRect(
         m_window,
@@ -127,7 +163,7 @@ void guiUI::UIbegin(
         static_cast<int>(win->y),
         static_cast<int>(win->width),
         static_cast<int>(win->height),
-        2.0f,
+        1.0f,
         vec3(0.65f, 0.65f, 0.68f));
 
     m_gl->boXGLDrawFilledRect(
@@ -135,8 +171,10 @@ void guiUI::UIbegin(
         static_cast<int>(win->x),
         static_cast<int>(win->y),
         static_cast<int>(win->width),
-        28,
+        static_cast<int>(win->titleBarHeight),
         vec3(0.24f, 0.24f, 0.30f));
+
+   
 }
 
 void guiUI::End()
@@ -144,12 +182,8 @@ void guiUI::End()
     m_currentWindow = nullptr;
 }
 
-bool guiUI::UIbutton(
-    const char* label,
-    float x,
-    float y,
-    float width,
-    float height)
+
+bool guiUI::WidgetButton(const char* label, float x, float y, float width, float height)
 {
     if (!m_window || !m_gl || !m_currentWindow)
         return false;
@@ -189,106 +223,46 @@ bool guiUI::UIbutton(
         vec3(0.75f, 0.75f, 0.78f));
 
     return clicked;
-
 }
 
-//void guiUI::UInewFrame(guiWin::gui_window* window, float mouseX, float mouseY, bool down, bool pressed, bool released)
-//{
-//	UIctx.window = window;
-//	UIctx.mouseX = mouseX;
-//	UIctx.mouseY = mouseY;
-//	UIctx.mouseDown = down;
-//	UIctx.mousePressed = pressed;
-//	UIctx.mouseReleased = released;
-//
-//	for (auto& w : UIwin)
-//	{
-//		w.mouseX = mouseX;
-//		w.mouseY = mouseY;
-//		w.mouseDown = down;
-//		w.mousePressed = pressed;
-//		w.mouseReleased = released;
-//	}
-//}
-//
-//void guiUI::UIbegin(const char* title, bool* p_open, int UIid)
-//{
-//	auto it = std::find_if(UIwin.begin(), UIwin.end(), [UIid](const UIwindow& w) { return w.UIid == UIid; });
-//
-//	if (!UIctx.window)
-//		return;
-//
-//	if (it == UIwin.end()) {
-//		UIwindow newWindow;
-//		newWindow.UIid = UIid;
-//		newWindow.title = title;
-//		newWindow.isOpen = p_open;
-//		newWindow.x = 100; // default position
-//		newWindow.y = 100; // default position
-//		newWindow.width = 300; // default size
-//		newWindow.height = 200; // default size
-//		UIwin.push_back(newWindow);
-//	}
-//	else {
-//		it->title = title;
-//		it->isOpen = p_open;
-//	}
-//
-//	if (p_open && !(*p_open))
-//	{
-//		UIctx.currentWindow = nullptr;
-//		return;
-//	}
-//
-//	UIwindow& win = *it;
-//	UIctx.currentWindow = &win;
-//
-//	win.isHovered =
-//		UIctx.mouseX >= win.x &&
-//		UIctx.mouseX <= win.x + win.width &&
-//		UIctx.mouseY >= win.y &&
-//		UIctx.mouseY <= win.y + win.height;
-//
-//	// Draw window background
-//	boXGLUI.boXGLDrawFilledRect(
-//		UIctx.window,
-//		static_cast<int>(win.x),
-//		static_cast<int>(win.y),
-//		static_cast<int>(win.width),
-//		static_cast<int>(win.height),
-//		vec3(0.16f, 0.16f, 0.18f));
-//
-//	// Draw border
-//	boXGLUI.boXGLDrawRect(
-//		UIctx.window,
-//		static_cast<int>(win.x),
-//		static_cast<int>(win.y),
-//		static_cast<int>(win.width),
-//		static_cast<int>(win.height),
-//		2.0f,
-//		vec3(0.65f, 0.65f, 0.68f));
-//
-//	// Draw title bar
-//	boXGLUI.boXGLDrawFilledRect(
-//		UIctx.window,
-//		static_cast<int>(win.x),
-//		static_cast<int>(win.y),
-//		static_cast<int>(win.width),
-//		28,
-//		vec3(0.24f, 0.24f, 0.30f));
-//
-//
-//
-//}
-//
-//void guiUI::UIend()
-//{
-//	UIctx.currentWindow = nullptr;
-//}
-//
-//bool guiUI::UIbutton()
-//{
-//	// Placeholder for button logic
-//	return true; // Return true if the button is pressed, false otherwise
-//}
-//
+
+
+
+/*if (!m_window || !m_gl || !m_currentWindow)
+        return false;
+
+    float screenX = m_currentWindow->x + x;
+    float screenY = m_currentWindow->y + y;
+
+    bool hovered =
+        IsMouseInside(screenX, screenY, width, height);
+
+    bool clicked = hovered && m_mousePressed;
+
+    vec3 colour = hovered
+        ? vec3(0.36f, 0.36f, 0.40f)
+        : vec3(0.26f, 0.26f, 0.30f);
+
+    if (hovered && m_mouseDown)
+    {
+        colour = vec3(0.18f, 0.18f, 0.22f);
+    }
+
+    m_gl->boXGLDrawFilledRect(
+        m_window,
+        static_cast<int>(screenX),
+        static_cast<int>(screenY),
+        static_cast<int>(width),
+        static_cast<int>(height),
+        colour);
+
+    m_gl->boXGLDrawRect(
+        m_window,
+        static_cast<int>(screenX),
+        static_cast<int>(screenY),
+        static_cast<int>(width),
+        static_cast<int>(height),
+        1.0f,
+        vec3(0.75f, 0.75f, 0.78f));
+
+    return clicked;*/
