@@ -2,8 +2,6 @@
 #include <guiWindow.h>
 #include <guiWinDeffs.h>
 #include <miniBoxLog.h>
-#include <editorState.h>
-
 
 
 bool firstMouse = true;
@@ -12,8 +10,6 @@ bool mouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 float fov = 45.0f;
-
-EditorState editor; // used for selecting between object mode and edit mode
 
 void inputHandler::Timer()
 {
@@ -54,19 +50,7 @@ void inputHandler::processInput(guiWin& app, guiWin::gui_window* window, Camera&
         camera.ProcessKeyboard(UP, -deltaTime);*/
 
 
-    if (app.guiGetKeyPressed(window, GLWIN_TAB) == GLWIN_PRESS)
-    {
-        if (editor.mode == EditorMode::ObjectMode)
-        {
-            editor.mode = EditorMode::EditMode;
-            BOX_LOG_INFO("Edit Mode");
-        }
-        else
-        {
-            editor.mode = EditorMode::ObjectMode;
-            BOX_LOG_INFO("Object Mode");
-        }
-    }
+   
 
 
 
@@ -106,6 +90,32 @@ void inputHandler::processInput(guiWin& app, guiWin::gui_window* window, Camera&
     }
 
 }
+
+
+
+void inputHandler::editMode(guiWin& app, guiWin::gui_window* window, EditorState& editor)
+{
+    if (app.guiGetKeyPressed(window, GLWIN_TAB) == GLWIN_PRESS)
+    {
+        if (editor.mode == EditorMode::ObjectMode)
+        {
+            editor.mode = EditorMode::EditMode;
+
+            // Default edit selection mode
+            editor.selectMode = EditSelectMode::Vertex;
+
+            BOX_LOG_INFO("Edit Mode");
+        }
+        else
+        {
+            editor.mode = EditorMode::ObjectMode;
+
+            BOX_LOG_INFO("Object Mode");
+        }
+    }
+
+}
+
 
 
 

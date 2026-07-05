@@ -6,15 +6,16 @@
 #include <boXGL.h>
 #include <camera.h>
 #include <editorInput.h>
+#include <editorState.h>
 #include <guiUI.h>
 
 
 // 24/06/26 A name for our graphics library is boXGL !!
-// 1. Object Mode selection first
-// 2. Click near projected object origin or bounding box
-// 3. Highlight selected object
-// 4. Then move to vertex / edge / face selection
-// 5. Start a simpel UI
+// 1. object mode edit mode improvment object mode no vertex / edge / face selection just object selection
+// 2. improve selection
+// 3. right click context menu for selection and edit mode
+// 4. Then move to vertex / edge / face selection using 1,2,3 to select
+// 5. scene collection
 // 6. Improve Render
 
 
@@ -36,7 +37,7 @@ int main() {
     boXGL gl;
     inputHandler in;
     guiUI ui;
-	
+    EditorState editor;
 
     guiWin::gui_window* window =
         app.guiCreateWindow(SCR_WIDTH, SCR_HEIGHT, TITLE);
@@ -68,6 +69,7 @@ int main() {
         app.guiPollEvents(window);
               
 		in.processInput(app, window, camera);// process keyboard & mouse input for camera movement
+        in.editMode(app, window, editor); // process keyboard TAB for edit mode / object mode selection
 
         if (app.guiGetMouseButtonPressed(window, GLWIN_MOUSE_BUTTON_LEFT) == GLWIN_PRESS)
         {
@@ -109,10 +111,43 @@ int main() {
 
         // draw a default cube and look at it with the new camera
         gl.boXGLDrawMesh(window, camera, cube);
-        gl.boXGLDrawOriginMarker(window, camera, cubePosition, cubeSelected ? vec3(1.0f, 0.9f, 0.1f) : vec3(1.0f, 0.7f, 0.1f),
-            cubeSelected ? 10 : 6);
+        /*gl.boXGLDrawOriginMarker(window, camera, cubePosition, cubeSelected ? vec3(1.0f, 0.9f, 0.1f) : vec3(1.0f, 0.7f, 0.1f),
+            cubeSelected ? 10 : 6);*/
 
-        
+        //#####################################
+        if (editor.mode == EditorMode::ObjectMode)
+        {
+            if (cubeSelected)
+            {
+                gl.boXGLDrawOriginMarker(
+                    window,
+                    camera,
+                    cubePosition,
+                    vec3(1.0f, 0.9f, 0.1f),
+                    10);
+            }
+        }
+        else if (editor.mode == EditorMode::EditMode)
+        {
+            if (editor.selectMode == EditSelectMode::Vertex)
+            {
+                gl.boXGLDrawMeshVertices(
+                    window,
+                    camera,
+                    cube,
+                    vec3(0.2f, 0.8f, 1.0f));
+
+                gl.boXGLDrawMeshEdges(
+                    window,
+                    camera,
+                    cube,
+                    vec3(0.05f, 0.05f, 0.05f));
+            }
+        }
+        //#####################################
+      
+
+
 
         ui.UInewFrame(app, window, gl);
 

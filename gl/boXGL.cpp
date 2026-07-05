@@ -414,7 +414,7 @@ void boXGL::boXGLDrawGrid(guiWin::gui_window* window, const Camera& camera, int 
         if (i == 0)
         {
             colour = xAxisColour;
-            lineSize = 2.0f;
+            lineSize = 1.0f;
         }
 
         boXGLDrawLine3D(
@@ -442,7 +442,7 @@ void boXGL::boXGLDrawGrid(guiWin::gui_window* window, const Camera& camera, int 
         if (i == 0)
         {
             colour = zAxisColour;
-            lineSize = 2.0f;
+            lineSize = 1.0f;
         }
 
         boXGLDrawLine3D(
@@ -826,7 +826,7 @@ void boXGL::boXGLDrawMesh(guiWin::gui_window* window, const Camera& camera, cons
 
     boXGLDrawMeshFaces(window, camera, mesh);
 
-    boXGLDrawMeshEdges(
+    /*boXGLDrawMeshEdges(
         window,
         camera,
         mesh,
@@ -836,7 +836,7 @@ void boXGL::boXGLDrawMesh(guiWin::gui_window* window, const Camera& camera, cons
         window,
         camera,
         mesh,
-        vec3(0.95f, 0.95f, 0.95f));
+        vec3(0.95f, 0.95f, 0.95f));*/
 }
 
 bool boXGL::boXGLProjectWorldToScreen(guiWin::gui_window* window, const Camera& camera, const vec3& worldPoint, boXScreenVertex& out)
