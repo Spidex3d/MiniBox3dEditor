@@ -4,6 +4,7 @@
 #include <miniBoxLog.h>
 
 
+
 bool firstMouse = true;
 bool mouse = true;
 
@@ -91,20 +92,18 @@ void inputHandler::processInput(guiWin& app, guiWin::gui_window* window, Camera&
 
 }
 
-
-
 void inputHandler::editMode(guiWin& app, guiWin::gui_window* window, EditorState& editor)
 {
+    // TAB switches between Object Mode and Edit Mode
     if (app.guiGetKeyPressed(window, GLWIN_TAB) == GLWIN_PRESS)
     {
         if (editor.mode == EditorMode::ObjectMode)
         {
             editor.mode = EditorMode::EditMode;
-
-            // Default edit selection mode
             editor.selectMode = EditSelectMode::Vertex;
 
             BOX_LOG_INFO("Edit Mode");
+            BOX_LOG_INFO("Vertex Mode");
         }
         else
         {
@@ -114,8 +113,252 @@ void inputHandler::editMode(guiWin& app, guiWin::gui_window* window, EditorState
         }
     }
 
+    // 1, 2, 3 only work while in Edit Mode
+    if (editor.mode == EditorMode::EditMode)
+    {
+        if (app.guiGetKeyPressed(window, GLWIN_KEY_1) == GLWIN_PRESS)
+        {
+            editor.selectMode = EditSelectMode::Vertex;
+            BOX_LOG_INFO("Vertex Mode");
+        }
+
+        if (app.guiGetKeyPressed(window, GLWIN_KEY_2) == GLWIN_PRESS)
+        {
+            editor.selectMode = EditSelectMode::Edge;
+            BOX_LOG_INFO("Edge Mode");
+        }
+
+        if (app.guiGetKeyPressed(window, GLWIN_KEY_3) == GLWIN_PRESS)
+        {
+            editor.selectMode = EditSelectMode::Face;
+            BOX_LOG_INFO("Face Mode");
+        }
+    }
 }
 
+void inputHandler::editCubeSelected(guiWin& app, guiWin::gui_window* window, boXGL& gl, const Camera& camera, EditorState& editor, const vec3& cubePosition, bool& cubeSelected)
+{
+    if (editor.mode != EditorMode::ObjectMode)
+        return;
+
+    if (app.guiGetMouseButtonPressed(window, GLWIN_MOUSE_BUTTON_LEFT) != GLWIN_PRESS)
+        return;
+
+    double mx = 0.0;
+    double my = 0.0;
+
+    app.guiGetCursorPos(window, &mx, &my);
+
+    boXGL::boXScreenVertex originScreen;
+
+    if (gl.boXGLProjectWorldToScreen(
+        window,
+        camera,
+        cubePosition,
+        originScreen))
+    {
+        float dx = static_cast<float>(mx) - originScreen.x;
+        float dy = static_cast<float>(my) - originScreen.y;
+
+        float distanceSquared = dx * dx + dy * dy;
+
+        float pickRadius = 18.0f;
+
+        if (distanceSquared <= pickRadius * pickRadius)
+        {
+            cubeSelected = true;
+            BOX_LOG_INFO("Cube selected");
+        }
+        else
+        {
+            cubeSelected = false;
+            BOX_LOG_INFO("Selection cleared");
+        }
+    }
+}
+
+int inputHandler::PickVertex(guiWin& app, guiWin::gui_window* window, boXGL& gl, const Camera& camera, const boXMesh& mesh, float pickRadius)
+{
+    double mx = 0.0;
+    double my = 0.0;
+
+    app.guiGetCursorPos(window, &mx, &my);
+
+    int bestIndex = -1;
+    float bestDistanceSq = pickRadius * pickRadius;
+
+    for (int i = 0; i < static_cast<int>(mesh.vertices.size()); ++i)
+    {
+        boXGL::boXScreenVertex p;
+
+        if (!gl.boXGLProjectWorldToScreen(
+            window,
+            camera,
+            mesh.vertices[i].position,
+            p))
+        {
+            continue;
+        }
+
+        float dx = static_cast<float>(mx) - p.x;
+        float dy = static_cast<float>(my) - p.y;
+
+        float distanceSq = dx * dx + dy * dy;
+
+        if (distanceSq < bestDistanceSq)
+        {
+            bestDistanceSq = distanceSq;
+            bestIndex = i;
+        }
+    }
+
+    return bestIndex;
+}
+static float DistancePointToLineSegmentSq(
+    float px,
+    float py,
+    float ax,
+    float ay,
+    float bx,
+    float by)
+{
+    float abx = bx - ax;
+    float aby = by - ay;
+
+    float apx = px - ax;
+    float apy = py - ay;
+
+    float abLenSq = abx * abx + aby * aby;
+
+    if (abLenSq <= 0.0001f)
+        return apx * apx + apy * apy;
+
+    float t = (apx * abx + apy * aby) / abLenSq;
+
+    if (t < 0.0f) t = 0.0f;
+    if (t > 1.0f) t = 1.0f;
+
+    float closestX = ax + abx * t;
+    float closestY = ay + aby * t;
+
+    float dx = px - closestX;
+    float dy = py - closestY;
+
+    return dx * dx + dy * dy;
+}
+
+int inputHandler::PickEdge(guiWin& app, guiWin::gui_window* window, boXGL& gl, const Camera& camera, const boXMesh& mesh, float pickRadius)
+{
+    double mx = 0.0;
+    double my = 0.0;
+
+    app.guiGetCursorPos(window, &mx, &my);
+
+    int bestIndex = -1;
+    float bestDistanceSq = pickRadius * pickRadius;
+
+    for (int i = 0; i < static_cast<int>(mesh.edges.size()); ++i)
+    {
+        const boXEdge& edge = mesh.edges[i];
+
+        boXGL::boXScreenVertex a;
+        boXGL::boXScreenVertex b;
+
+        if (!gl.boXGLProjectWorldToScreen(
+            window,
+            camera,
+            mesh.vertices[edge.v0].position,
+            a))
+        {
+            continue;
+        }
+
+        if (!gl.boXGLProjectWorldToScreen(
+            window,
+            camera,
+            mesh.vertices[edge.v1].position,
+            b))
+        {
+            continue;
+        }
+
+        float distanceSq =
+            DistancePointToLineSegmentSq(
+                static_cast<float>(mx),
+                static_cast<float>(my),
+                a.x,
+                a.y,
+                b.x,
+                b.y);
+
+        if (distanceSq < bestDistanceSq)
+        {
+            bestDistanceSq = distanceSq;
+            bestIndex = i;
+        }
+    }
+
+    return bestIndex;
+}
+
+
+void inputHandler::editSelection(guiWin& app, guiWin::gui_window* window, boXGL& gl, const Camera& camera, EditorState& editor, const boXMesh& mesh)
+{
+    if (editor.mode != EditorMode::EditMode)
+        return;
+
+    if (app.guiGetMouseButtonPressed(window, GLWIN_MOUSE_BUTTON_LEFT) != GLWIN_PRESS)
+        return;
+
+    if (editor.selectMode == EditSelectMode::Vertex)
+    {
+        int pickedVertex =
+            PickVertex(
+                app,
+                window,
+                gl,
+                camera,
+                mesh,
+                12.0f);
+
+        editor.selectedVertex = pickedVertex;
+        editor.selectedEdge = -1;
+        editor.selectedFace = -1;
+
+        if (pickedVertex >= 0)
+        {
+            BOX_LOG_INFO("Selected vertex: " << pickedVertex);
+        }
+        else
+        {
+            BOX_LOG_INFO("No vertex selected");
+        }
+    }
+    else if (editor.selectMode == EditSelectMode::Edge)
+    {
+        int pickedEdge =
+            PickEdge(
+                app,
+                window,
+                gl,
+                camera,
+                mesh,
+                10.0f);
+
+        editor.selectedVertex = -1;
+        editor.selectedEdge = pickedEdge;
+        editor.selectedFace = -1;
+
+        if (pickedEdge >= 0)
+        {
+            BOX_LOG_INFO("Selected edge: " << pickedEdge);
+        }
+        else
+        {
+            BOX_LOG_INFO("No edge selected");
+        }
+    }
+}
 
 
 

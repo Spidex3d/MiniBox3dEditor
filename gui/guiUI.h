@@ -77,7 +77,7 @@ UIwindow UIctx;
 
     //void WidgetSpacing();
 
-    //bool WidgetImageButton(const std::string& texPath, float w, float h);
+    bool WidgetImageButton(const std::string& texPath, float w, float h);
 
     //bool WidgetImageBox(const std::string& texPath, float w, float h, const char* label = nullptr);
 

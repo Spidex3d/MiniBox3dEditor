@@ -8,6 +8,7 @@
 #include <editorInput.h>
 #include <editorState.h>
 #include <guiUI.h>
+#include <editorRender.h>
 
 
 // 24/06/26 A name for our graphics library is boXGL !!
@@ -38,6 +39,7 @@ int main() {
     inputHandler in;
     guiUI ui;
     EditorState editor;
+	editorRender renderEditor;
 
     guiWin::gui_window* window =
         app.guiCreateWindow(SCR_WIDTH, SCR_HEIGHT, TITLE);
@@ -70,38 +72,9 @@ int main() {
               
 		in.processInput(app, window, camera);// process keyboard & mouse input for camera movement
         in.editMode(app, window, editor); // process keyboard TAB for edit mode / object mode selection
-
-        if (app.guiGetMouseButtonPressed(window, GLWIN_MOUSE_BUTTON_LEFT) == GLWIN_PRESS)
-        {
-            double mx = 0.0;
-            double my = 0.0;
-
-            app.guiGetCursorPos(window, &mx, &my);
-
-            boXGL::boXScreenVertex originScreen;
-
-            if (gl.boXGLProjectWorldToScreen(window, camera, cubePosition, originScreen))
-            {
-                float dx = static_cast<float>(mx) - originScreen.x;
-                float dy = static_cast<float>(my) - originScreen.y;
-
-                float distanceSquared = dx * dx + dy * dy;
-
-                float pickRadius = 18.0f;
-
-                if (distanceSquared <= pickRadius * pickRadius)
-                {
-                    cubeSelected = true;
-                    BOX_LOG_INFO("Cube selected");
-                }
-                else
-                {
-                    cubeSelected = false;
-                    BOX_LOG_INFO("Selection cleared");
-                }
-            }
-        }
-
+        in.editSelection(app, window, gl, camera, editor, cube);
+		in.editCubeSelected(app, window, gl, camera, editor, cubePosition, cubeSelected);
+        
         // set the color to gray
         gl.boXGLClearColor(window, 28, 28, 28);
 		// clear the depth buffer
@@ -111,44 +84,10 @@ int main() {
 
         // draw a default cube and look at it with the new camera
         gl.boXGLDrawMesh(window, camera, cube);
-        /*gl.boXGLDrawOriginMarker(window, camera, cubePosition, cubeSelected ? vec3(1.0f, 0.9f, 0.1f) : vec3(1.0f, 0.7f, 0.1f),
-            cubeSelected ? 10 : 6);*/
-
-        //#####################################
-        if (editor.mode == EditorMode::ObjectMode)
-        {
-            if (cubeSelected)
-            {
-                gl.boXGLDrawOriginMarker(
-                    window,
-                    camera,
-                    cubePosition,
-                    vec3(1.0f, 0.9f, 0.1f),
-                    10);
-            }
-        }
-        else if (editor.mode == EditorMode::EditMode)
-        {
-            if (editor.selectMode == EditSelectMode::Vertex)
-            {
-                gl.boXGLDrawMeshVertices(
-                    window,
-                    camera,
-                    cube,
-                    vec3(0.2f, 0.8f, 1.0f));
-
-                gl.boXGLDrawMeshEdges(
-                    window,
-                    camera,
-                    cube,
-                    vec3(0.05f, 0.05f, 0.05f));
-            }
-        }
-        //#####################################
-      
-
-
-
+        
+		// draw editor overlays based on the current editor state
+		renderEditor.DrawEditorOverlays(window, gl, camera, editor, cube, cubePosition, cubeSelected);
+        
         ui.UInewFrame(app, window, gl);
 
         static bool demoWindowOpen = true;

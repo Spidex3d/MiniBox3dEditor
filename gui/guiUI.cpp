@@ -298,44 +298,11 @@ bool guiUI::WidgetButton(const char* label, float x, float y, float width, float
     return clicked;
 }
 
+bool guiUI::WidgetImageButton(const std::string& texPath, float w, float h)
+{
+    if (!m_window || !m_gl || !m_currentWindow)
+		return false;
+	
+}
 
 
-
-/*if (!m_window || !m_gl || !m_currentWindow)
-        return false;
-
-    float screenX = m_currentWindow->x + x;
-    float screenY = m_currentWindow->y + y;
-
-    bool hovered =
-        IsMouseInside(screenX, screenY, width, height);
-
-    bool clicked = hovered && m_mousePressed;
-
-    vec3 colour = hovered
-        ? vec3(0.36f, 0.36f, 0.40f)
-        : vec3(0.26f, 0.26f, 0.30f);
-
-    if (hovered && m_mouseDown)
-    {
-        colour = vec3(0.18f, 0.18f, 0.22f);
-    }
-
-    m_gl->boXGLDrawFilledRect(
-        m_window,
-        static_cast<int>(screenX),
-        static_cast<int>(screenY),
-        static_cast<int>(width),
-        static_cast<int>(height),
-        colour);
-
-    m_gl->boXGLDrawRect(
-        m_window,
-        static_cast<int>(screenX),
-        static_cast<int>(screenY),
-        static_cast<int>(width),
-        static_cast<int>(height),
-        1.0f,
-        vec3(0.75f, 0.75f, 0.78f));
-
-    return clicked;*/

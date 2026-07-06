@@ -826,17 +826,6 @@ void boXGL::boXGLDrawMesh(guiWin::gui_window* window, const Camera& camera, cons
 
     boXGLDrawMeshFaces(window, camera, mesh);
 
-    /*boXGLDrawMeshEdges(
-        window,
-        camera,
-        mesh,
-        vec3(0.05f, 0.05f, 0.05f));
-
-    boXGLDrawMeshVertices(
-        window,
-        camera,
-        mesh,
-        vec3(0.95f, 0.95f, 0.95f));*/
 }
 
 bool boXGL::boXGLProjectWorldToScreen(guiWin::gui_window* window, const Camera& camera, const vec3& worldPoint, boXScreenVertex& out)
