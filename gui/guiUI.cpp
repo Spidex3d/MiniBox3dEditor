@@ -38,9 +38,19 @@ void guiUI::UInewFrame(
 
     m_currentWindow = nullptr;
 }
+void guiUI::UISetNextWindowPos(float x, float y)
+{
+    m_hasNextWindowPos = true;
+    m_nextWindowX = x;
+    m_nextWindowY = y;
+}
+void guiUI::UISetNextWindowSize(float width, float height)
+{
+    m_hasNextWindowSize = true;
+    m_nextWindowWidth = width;
+    m_nextWindowHeight = height;
+}
 // ########################################## Text rendering function (currently empty, to be implemented later)
-
-
 
 bool guiUI::IsMouseInside(
     float x,
@@ -60,6 +70,7 @@ UIwindow* guiUI::FindOrCreateWindow(
     bool* p_open,
     int UIid)
 {
+    
     auto it = std::find_if(
         m_windows.begin(),
         m_windows.end(),
@@ -68,19 +79,66 @@ UIwindow* guiUI::FindOrCreateWindow(
         return w.UIid == UIid;
     });
 
+    for (auto& win : m_windows)
+    {
+        if (win.UIid == UIid)
+        {
+            m_hasNextWindowPos = false;
+            m_hasNextWindowSize = false;
+            return &win;
+        }
+    }
+
     if (it == m_windows.end())
     {
         UIwindow newWindow;
+
         newWindow.UIid = UIid;
         newWindow.title = title;
         newWindow.isOpen = p_open;
-        newWindow.x = 100.0f;
-        newWindow.y = 100.0f;
-        newWindow.width = 300.0f;
-        newWindow.height = 200.0f;
+
+        if (m_hasNextWindowPos)
+        {
+            newWindow.x = m_nextWindowX;
+            newWindow.y = m_nextWindowY;
+        }
+        else
+        {
+            newWindow.x = 100.0f;
+            newWindow.y = 100.0f;
+        }
+
+        if (m_hasNextWindowSize)
+        {
+            newWindow.width = m_nextWindowWidth;
+            newWindow.height = m_nextWindowHeight;
+        }
+        else
+        {
+            newWindow.width = 300.0f;
+            newWindow.height = 200.0f;
+        }
 
         m_windows.push_back(newWindow);
+
+        m_hasNextWindowPos = false;
+        m_hasNextWindowSize = false;
+
         return &m_windows.back();
+
+  //      UIwindow newWindow;
+  //      newWindow.UIid = UIid;
+  //      newWindow.title = title;
+  //      newWindow.isOpen = p_open;
+  //      //newWindow.x = 100.0f;
+		//newWindow.x = SCR_WIDTH - 300.0f; // SCR_WIDTH - 300
+  //      //newWindow.y = 100.0f;
+		//newWindow.y = 1.0f; // SCR_HEIGHT - properties window height 
+		//newWindow.width = 300.0f; // SCR_WIDTH - 300
+  //      newWindow.height = 600.0f; // SCR_HEIGHT
+
+  //      m_windows.push_back(newWindow);
+  //      return &m_windows.back();
     }
 
     it->title = title;
@@ -296,6 +354,83 @@ bool guiUI::WidgetButton(const char* label, float x, float y, float width, float
         2);
 
     return clicked;
+}
+// used for the scene collection, returns true if the node is clicked, and toggles the expanded state if the arrow is clicked
+bool guiUI::WidgetTreeNode(const char* label, bool& expanded, bool selected, float x, float y, float width, float height)
+{
+    if (!m_window || !m_gl || !m_currentWindow)
+        return false;
+
+    float screenX = m_currentWindow->x + x;
+    float screenY = m_currentWindow->y + y;
+
+    bool hovered =
+        IsMouseInside(
+            screenX,
+            screenY,
+            width,
+            height);
+
+    bool clicked = hovered && m_mousePressed;
+
+    vec3 backgroundColour = selected
+        ? vec3(0.25f, 0.35f, 0.55f)
+        : vec3(0.16f, 0.16f, 0.18f);
+
+    if (hovered && !selected)
+    {
+        backgroundColour = vec3(0.24f, 0.24f, 0.28f);
+    }
+
+    m_gl->boXGLDrawFilledRect(
+        m_window,
+        static_cast<int>(screenX),
+        static_cast<int>(screenY),
+        static_cast<int>(width),
+        static_cast<int>(height),
+        backgroundColour);
+
+    const char* arrow = expanded ? "v" : ">";
+
+    m_gl->boXGLDrawText(
+        m_window,
+        static_cast<int>(screenX + 6),
+        static_cast<int>(screenY + 5),
+        arrow,
+        vec3(1.0f, 1.0f, 1.0f),
+        2);
+
+    m_gl->boXGLDrawText(
+        m_window,
+        static_cast<int>(screenX + 28),
+        static_cast<int>(screenY + 5),
+        label,
+        vec3(1.0f, 1.0f, 1.0f),
+        2);
+
+    if (clicked)
+    {
+        expanded = !expanded;
+    }
+
+    return clicked;
+}
+
+void guiUI::WidgetLabel(const char* text, float x, float y)
+{
+    if (!m_window || !m_gl || !m_currentWindow)
+        return;
+
+    float screenX = m_currentWindow->x + x;
+    float screenY = m_currentWindow->y + y;
+
+    m_gl->boXGLDrawText(
+        m_window,
+        static_cast<int>(screenX),
+        static_cast<int>(screenY),
+        text,
+        vec3(1.0f, 1.0f, 1.0f),
+        2);
 }
 
 bool guiUI::WidgetImageButton(const std::string& texPath, float w, float h)

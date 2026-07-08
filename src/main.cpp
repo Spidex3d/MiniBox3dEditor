@@ -9,6 +9,8 @@
 #include <editorState.h>
 #include <guiUI.h>
 #include <editorRender.h>
+#include <sceneObject.h>
+#include <vector>
 
 
 // 24/06/26 A name for our graphics library is boXGL !!
@@ -17,7 +19,7 @@
 // 3. right click context menu for selection and edit mode
 // 4. Then move to vertex / edge / face selection using 1,2,3 to select
 // 5. scene collection
-// 6. Improve Render
+// 6. Improved Render
 
 
 // guiWin = OS window / input
@@ -40,7 +42,7 @@ int main() {
     guiUI ui;
     EditorState editor;
 	editorRender renderEditor;
-
+   
     guiWin::gui_window* window =
         app.guiCreateWindow(SCR_WIDTH, SCR_HEIGHT, TITLE);
 
@@ -62,7 +64,30 @@ int main() {
     // Default cube
     bool cubeSelected = false;
     vec3 cubePosition = vec3(0.0f, 0.75f, 0.0f);
-    boXMesh cube =  boXCreateCubeMesh(cubePosition,  vec3(1.5f, 1.5f, 1.5f));
+    boXMesh cube = boXCreateCubeMesh(cubePosition, vec3(1.5f, 1.5f, 1.5f));
+
+
+
+	// ################################## Scene collection / object list ################
+    std::vector<SceneObject> sceneObjects;
+
+    SceneObject cubeSceneObject;
+    cubeSceneObject.id = 0;
+    cubeSceneObject.name = "Cube";
+    cubeSceneObject.type = SceneObjectType::Mesh;
+    cubeSceneObject.position = cubePosition;
+    cubeSceneObject.rotation = vec3(0.0f, 0.0f, 0.0f);
+    cubeSceneObject.scale = vec3(1.5f, 1.5f, 1.5f);
+    cubeSceneObject.selected = false;
+    cubeSceneObject.expanded = false;
+
+    sceneObjects.push_back(cubeSceneObject);
+
+    int selectedSceneObject = -1;
+    // ##################################
+
+
+    
 
     while (!app.guiWindowShouldClose(window))
     {
@@ -90,8 +115,50 @@ int main() {
         
         ui.UInewFrame(app, window, gl);
 
-        static bool demoWindowOpen = true;
+		// ###################################### scene collection / object list ################
+        static bool sceneWindowOpen = true;
 
+		ui.UISetNextWindowSize(300.0f, 400.0f);
+		ui.UISetNextWindowPos(SCR_WIDTH - 300, 1.0f);
+        ui.UIbegin("Scene Collection", &sceneWindowOpen, 2);
+
+        float rowY = 45.0f;
+
+        for (int i = 0; i < static_cast<int>(sceneObjects.size()); ++i)
+        {
+            bool clicked =
+                ui.WidgetTreeNode(
+                    sceneObjects[i].name.c_str(),
+                    sceneObjects[i].expanded,
+                    selectedSceneObject == i,
+                    12.0f,
+                    rowY,
+                    260.0f,
+                    26.0f);
+
+            if (clicked)
+            {
+                selectedSceneObject = i;
+
+                for (auto& obj : sceneObjects)
+                    obj.selected = false;
+
+                sceneObjects[i].selected = true;
+
+                if (sceneObjects[i].name == "Cube")
+                {
+                    cubeSelected = true;
+                }
+            }
+
+            rowY += 28.0f;
+        }
+
+        ui.End();
+		// ###################################### End scene collection / object list ################
+        static bool demoWindowOpen = true;
+        ui.UISetNextWindowSize(300.0f, 300.0f);
+        ui.UISetNextWindowPos(SCR_WIDTH - 300, 401.0f);
         ui.UIbegin("Demo Window", &demoWindowOpen, 1);
 
         if (ui.WidgetButton("OK", 20.0f, 50.0f, 80.0f, 28.0f))

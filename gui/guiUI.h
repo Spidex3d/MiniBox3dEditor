@@ -45,12 +45,17 @@ UIwindow UIctx;
     void UInewFrame(guiWin& app, guiWin::gui_window* window, boXGL& gl);
 
     
+    void UISetNextWindowPos(float x, float y);
+    void UISetNextWindowSize(float width, float height);
 
     void UIbegin(const char* title, bool* p_open = nullptr, int UIid = 0);
 
     void End();
     bool WidgetButton(const char* label, float x, float y, float width, float height);
+    // used for scene collection
+    bool WidgetTreeNode(const char* label, bool& expanded, bool selected, float x, float y, float width, float height);
 
+    void WidgetLabel(const char* text, float x, float y);
     //bool WidgetColorBoxLabel(const char* label, float* r, float* g, float* b, float w = 40.0f, float h = 20.0f);
 
     //bool WidgetInputText(const char* label, char* buf, size_t buf_size, float w, float h);
@@ -111,4 +116,13 @@ private:
     bool IsMouseInside(float x, float y, float width, float height) const;
 
     UIwindow* FindOrCreateWindow(const char* title, bool* p_open, int UIid);
+
+    bool m_hasNextWindowPos = false;
+    bool m_hasNextWindowSize = false;
+
+    float m_nextWindowX = 100.0f;
+    float m_nextWindowY = 100.0f;
+
+    float m_nextWindowWidth = 300.0f;
+    float m_nextWindowHeight = 200.0f;
 };

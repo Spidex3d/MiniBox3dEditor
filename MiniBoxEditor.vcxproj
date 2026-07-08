@@ -152,6 +152,7 @@
     <ClInclude Include="gui\guiUI.h" />
     <ClInclude Include="gui\guiWinDeffs.h" />
     <ClInclude Include="gui\guiWindow.h" />
+    <ClInclude Include="gui\sceneObject.h" />
     <ClInclude Include="inc\boXM\boXM.h" />
     <ClInclude Include="inc\global.h" />
     <ClInclude Include="inc\miniBoxLog.h" />
