@@ -852,4 +852,68 @@ void boXGL::boXGLDrawOriginMarker(guiWin::gui_window* window, const Camera& came
         colour);
 }
 
+static unsigned int PackRGBA(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255)
+{
+    return (static_cast<unsigned int>(a) << 24) |
+        (static_cast<unsigned int>(r) << 16) |
+        (static_cast<unsigned int>(g) << 8) |
+        (static_cast<unsigned int>(b));
+}
+
+void boXGL::boXGLDrawImage(guiWin::gui_window* window, const boXImg& image, int x, int y, int drawWidth, int drawHeight)
+{
+
+    if (!window || !image.pixels)
+        return;
+
+    if (drawWidth <= 0 || drawHeight <= 0)
+        return;
+
+    for (int dy = 0; dy < drawHeight; ++dy)
+    {
+        for (int dx = 0; dx < drawWidth; ++dx)
+        {
+            int dstX = x + dx;
+            int dstY = y + dy;
+
+            if (dstX < 0 || dstY < 0 || dstX >= window->width || dstY >= window->height)
+                continue;
+
+            // nearest-neighbour scaling
+            int srcX = dx * image.width / drawWidth;
+            int srcY = dy * image.height / drawHeight;
+
+            int srcIndex = (srcY * image.width + srcX) * 4;
+
+            unsigned char r = image.pixels[srcIndex + 0];
+            unsigned char g = image.pixels[srcIndex + 1];
+            unsigned char b = image.pixels[srcIndex + 2];
+            unsigned char a = image.pixels[srcIndex + 3];
+
+            if (a == 0)
+                continue;
+
+            int dstIndex = dstY * window->width + dstX;
+
+            // simple alpha blend
+            unsigned int dst = window->pixels[dstIndex];
+
+            unsigned char dstA = (dst >> 24) & 0xFF;
+            unsigned char dstR = (dst >> 16) & 0xFF;
+            unsigned char dstG = (dst >> 8) & 0xFF;
+            unsigned char dstB = (dst >> 0) & 0xFF;
+
+            float alpha = a / 255.0f;
+            float invAlpha = 1.0f - alpha;
+
+            unsigned char outR = static_cast<unsigned char>(r * alpha + dstR * invAlpha);
+            unsigned char outG = static_cast<unsigned char>(g * alpha + dstG * invAlpha);
+            unsigned char outB = static_cast<unsigned char>(b * alpha + dstB * invAlpha);
+            unsigned char outA = static_cast<unsigned char>(a + dstA * invAlpha);
+
+            window->pixels[dstIndex] = PackRGBA(outR, outG, outB, outA);
+        }
+    }
+}
+
 

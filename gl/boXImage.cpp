@@ -3,30 +3,26 @@
 #include "stb_image.h"
 #include "boXImage.h"
 
-int boXImage::boXLoadImage(const char* filename)
+bool boXImage::boXLoadImage(const char* filename, boXImg& image)
 {
-	pixels = stbi_load(filename, &width, &height, &channels, 0);
-	if (!pixels)
-	{
-		BOX_LOG_ERROR("Failed to load image: " << filename);
-		return -1;
-	}
-	BOX_LOG_INFO("Loaded image: " << filename << " (" << width << "x" << height << ", " << channels << " channels)");
-	return 0;
+	image.pixels = stbi_load(filename, &image.width, &image.height,	&image.channels, 4); // force RGBA
 
+	if (!image.pixels)
+		return false;
+
+	image.channels = 4;
+	return true;
 }
 
-void boXImage::boXFreeImage()
+void boXImage::boXFreeImage(boXImage& image)
 {
-    if (pixels)
-    {
-        stbi_image_free(pixels);
-        pixels = nullptr;
-    }
+	if (pixels)
+	{
+		stbi_image_free(pixels);
+		pixels = nullptr;
+	}
 
-    width = 0;
-    height = 0;
-    channels = 0;
-
-
+	width = 0;
+	height = 0;
+	channels = 0;
 }

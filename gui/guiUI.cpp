@@ -147,6 +147,233 @@ UIwindow* guiUI::FindOrCreateWindow(
     return &(*it);
 }
 
+UIframe* guiUI::FindOrCreateFrame(
+    
+    float posX,
+    float posY,
+    float width,
+    float height,
+    int UIFrameid)
+{
+    for (auto& frame : m_frames)
+    {
+        if (frame.UIid == UIFrameid)
+        {
+            frame.x = posX;
+            frame.y = posY;
+            frame.width = width;
+            frame.height = height;
+           
+            return &frame;
+        }
+    }
+
+    UIframe newFrame;
+
+    newFrame.UIid = UIFrameid;
+   // newFrame.title = title;
+    newFrame.x = posX;
+    newFrame.y = posY;
+    newFrame.width = width;
+    newFrame.height = height;
+
+    m_frames.push_back(newFrame);
+
+    return &m_frames.back();
+}
+
+bool guiUI::WidgetFrameButton(const char* label, float x, float y, float width, float height)
+{
+    if (!m_window || !m_gl || !m_currentFrame)
+        return false;
+
+    float screenX = m_currentFrame->x + x;
+    float screenY = m_currentFrame->y + y;
+
+    bool hovered =
+        IsMouseInside(
+            screenX,
+            screenY,
+            width,
+            height);
+
+    bool clicked = hovered && m_mousePressed;
+
+    vec3 colour = hovered
+        ? vec3(0.34f, 0.34f, 0.38f)
+        : vec3(0.24f, 0.24f, 0.28f);
+
+    if (hovered && m_mouseDown)
+    {
+        colour = vec3(0.16f, 0.16f, 0.20f);
+    }
+
+    m_gl->boXGLDrawFilledRect(
+        m_window,
+        static_cast<int>(screenX),
+        static_cast<int>(screenY),
+        static_cast<int>(width),
+        static_cast<int>(height),
+        colour);
+
+    m_gl->boXGLDrawRect(
+        m_window,
+        static_cast<int>(screenX),
+        static_cast<int>(screenY),
+        static_cast<int>(width),
+        static_cast<int>(height),
+        1.0f,
+        vec3(0.55f, 0.55f, 0.58f));
+
+    m_gl->boXGLDrawText(
+        m_window,
+        static_cast<int>(screenX + 8.0f),
+        static_cast<int>(screenY + 8.0f),
+        label,
+        vec3(1.0f, 1.0f, 1.0f),
+        1);
+
+    return clicked;
+}
+
+bool guiUI::WidgetSideButton(const char* label, bool selected)
+{
+    if (!m_window || !m_gl || !m_currentFrame)
+        return false;
+
+    UIframe* frame = m_currentFrame;
+
+    float buttonSize = frame->width - frame->padding * 2.0f;
+
+    float screenX = frame->x + frame->cursorX;
+    float screenY = frame->y + frame->cursorY;
+
+    bool hovered =
+        IsMouseInside(
+            screenX,
+            screenY,
+            buttonSize,
+            buttonSize);
+
+    bool clicked = hovered && m_mousePressed;
+
+    vec3 colour = selected
+        ? vec3(1.0f, 0.5f, 0.0f)
+        : vec3(0.22f, 0.22f, 0.25f);
+
+    if (hovered && !selected)
+    {
+        colour = vec3(0.34f, 0.34f, 1.0f);
+    }
+
+    if (hovered && m_mouseDown)
+    {
+        colour = vec3(0.34f, 0.34f, 1.0f);
+    }
+
+    m_gl->boXGLDrawFilledRect(
+        m_window,
+        static_cast<int>(screenX),
+        static_cast<int>(screenY),
+        static_cast<int>(buttonSize),
+        static_cast<int>(buttonSize),
+        colour);
+
+    m_gl->boXGLDrawRect(
+        m_window,
+        static_cast<int>(screenX),
+        static_cast<int>(screenY),
+        static_cast<int>(buttonSize),
+        static_cast<int>(buttonSize),
+        1.0f,
+        vec3(0.50f, 0.50f, 0.53f));
+
+    
+    m_gl->boXGLDrawText(
+        m_window,
+        static_cast<int>(screenX + 7.0f),
+        static_cast<int>(screenY + 7.0f),
+        label,
+        vec3(1.0f, 1.0f, 1.0f),
+        1);
+
+    frame->cursorY += buttonSize + frame->spacing;
+
+    return clicked;
+}
+// This adds a image to the button
+//bool guiUI::WidgetSideImageButton(const boXImage& image, bool selected)
+bool guiUI::WidgetSideImageButton(const boXImg& image, bool selected)
+{
+    if (!m_window || !m_gl || !m_currentFrame)
+        return false;
+
+    UIframe* frame = m_currentFrame;
+
+    float buttonSize = frame->width - frame->padding * 2.0f;
+
+    float screenX = frame->x + frame->cursorX;
+    float screenY = frame->y + frame->cursorY;
+
+    bool hovered =
+        IsMouseInside(
+            screenX,
+            screenY,
+            buttonSize,
+            buttonSize);
+
+    bool clicked = hovered && m_mousePressed;
+
+    vec3 colour = selected
+        ? vec3(1.0f, 0.5f, 0.0f)
+        : vec3(0.22f, 0.22f, 0.25f);
+
+    if (hovered && !selected)
+    {
+        colour = vec3(0.34f, 0.34f, 1.0f); // blue
+    }
+
+    if (hovered && m_mouseDown)
+    {
+        colour = vec3(0.34f, 0.34f, 1.0f); // blue
+    }
+
+    // button background
+    m_gl->boXGLDrawFilledRect(
+        m_window,
+        static_cast<int>(screenX),
+        static_cast<int>(screenY),
+        static_cast<int>(buttonSize),
+        static_cast<int>(buttonSize),
+        colour);
+
+    // button border
+    m_gl->boXGLDrawRect(
+        m_window,
+        static_cast<int>(screenX),
+        static_cast<int>(screenY),
+        static_cast<int>(buttonSize),
+        static_cast<int>(buttonSize),
+        1.0f,
+        vec3(0.50f, 0.50f, 0.53f));
+
+    // icon padding
+    int iconPadding = 3;
+    int iconSize = static_cast<int>(buttonSize) - iconPadding * 2;
+
+    m_gl->boXGLDrawImage(
+        m_window,
+        image,
+        static_cast<int>(screenX) + iconPadding,
+        static_cast<int>(screenY) + iconPadding,
+        iconSize,
+        iconSize);
+
+    frame->cursorY += buttonSize + frame->spacing;
+
+    return clicked;
+}
+
 void guiUI::UIbegin(const char* title, bool* p_open, int UIid)
 {   
 
@@ -304,6 +531,57 @@ void guiUI::End()
 {
     m_currentWindow = nullptr;
 }
+// this is a frame to group buttons together for menue bars, it has a title bar, no close button
+
+void guiUI::UIFrame(float posX, float posY, float width, float height, int UIFrameid)
+{
+	if (!m_window || !m_gl)
+		return;
+	UIframe newFrame;
+	newFrame.UIid = UIFrameid;
+	newFrame.x = posX;
+	newFrame.y = posY;
+	newFrame.width = width;
+	newFrame.height = height;
+	newFrame.cursorX = newFrame.padding;
+	newFrame.cursorY = newFrame.padding;
+	m_frames.push_back(newFrame);
+	m_currentFrame = &m_frames.back();
+
+ 
+
+
+	// background for the frame
+	m_gl->boXGLDrawFilledRect(
+		m_window,
+		static_cast<int>(newFrame.x),
+		static_cast<int>(newFrame.y),
+		static_cast<int>(newFrame.width),
+		static_cast<int>(newFrame.height),
+		vec3(0.20f, 0.20f, 0.24f));
+    // border for the frame
+	/*m_gl->boXGLDrawRect(
+		m_window,
+		static_cast<int>(newFrame.x),
+		static_cast<int>(newFrame.y),
+		static_cast<int>(newFrame.width),
+		static_cast<int>(newFrame.height),
+		1.0f,
+		vec3(0.75f, 0.75f, 0.78f));*/
+    // text for the fram title
+	/*m_gl->boXGLDrawText(
+		m_window,
+		static_cast<int>(newFrame.x + 8),
+		static_cast<int>(newFrame.y + 8),
+		newFrame.title.c_str(),
+		vec3(1.0f, 1.0f, 1.0f),
+		2);*/
+}
+
+void guiUI::UIFrameEnd()
+{
+	m_currentFrame = nullptr;
+}
 
 
 bool guiUI::WidgetButton(const char* label, float x, float y, float width, float height)
@@ -414,6 +692,63 @@ bool guiUI::WidgetTreeNode(const char* label, bool& expanded, bool selected, flo
     }
 
     return clicked;
+}
+
+void guiUI::WidgetMenuBar(const std::vector<std::string>& buttonLabels, float x, float y, float width, float height)
+{
+    if (!m_window || !m_gl || !m_currentWindow)
+        return;
+
+	float screenX = m_currentWindow->x + x;
+	float screenY = m_currentWindow->y + y;
+	m_gl->boXGLDrawFilledRect(
+		m_window,
+		static_cast<int>(screenX),
+		static_cast<int>(screenY),
+		static_cast<int>(width),
+		static_cast<int>(height),
+		vec3(0.20f, 0.20f, 0.24f));
+	float buttonWidth = width / buttonLabels.size();
+	for (size_t i = 0; i < buttonLabels.size(); ++i)
+	{
+		float buttonX = screenX + i * buttonWidth;
+		float buttonY = screenY;
+		bool hovered =
+			IsMouseInside(
+				buttonX,
+				buttonY,
+				buttonWidth,
+				height);
+		vec3 colour = hovered
+			? vec3(0.36f, 0.36f, 0.40f)
+			: vec3(0.26f, 0.26f, 0.30f);
+		if (hovered && m_mouseDown)
+		{
+			colour = vec3(0.18f, 0.18f, 0.22f);
+		}
+		m_gl->boXGLDrawFilledRect(
+			m_window,
+			static_cast<int>(buttonX),
+			static_cast<int>(buttonY),
+			static_cast<int>(buttonWidth),
+			static_cast<int>(height),
+			colour);
+		m_gl->boXGLDrawRect(
+			m_window,
+			static_cast<int>(buttonX),
+			static_cast<int>(buttonY),
+			static_cast<int>(buttonWidth),
+			static_cast<int>(height),
+			1.0f,
+			vec3(0.75f, 0.75f, 0.78f));
+		m_gl->boXGLDrawText(
+			m_window,
+			static_cast<int>(buttonX + 8),
+			static_cast<int>(buttonY + 8),
+			buttonLabels[i].c_str(),
+			vec3(1.0f, 1.0f, 1.0f),
+			2);
+	}
 }
 
 void guiUI::WidgetLabel(const char* text, float x, float y)

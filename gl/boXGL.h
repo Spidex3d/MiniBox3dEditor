@@ -3,6 +3,8 @@
 #include <boXM\boXM.h>
 #include <mesh\boxMesh.h>
 #include <camera.h> // Ensure Camera type is included
+#include <boXImage.h> // Ensure boXImage type is included
+
 
 class boXGL {
 
@@ -64,6 +66,8 @@ public:
 
 	bool boXGLProjectWorldToScreen(guiWin::gui_window* window, const Camera& camera, const vec3& worldPoint, boXScreenVertex& out);
 	void boXGLDrawOriginMarker(guiWin::gui_window* window, const Camera& camera, const vec3& position, vec3 colour, int radius);
+
+	void boXGLDrawImage(guiWin::gui_window* window,	const boXImg& image, int x, int y, int drawWidth, int drawHeight);
 
 private:
 

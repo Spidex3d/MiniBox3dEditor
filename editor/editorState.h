@@ -18,6 +18,7 @@ enum class EditorTool
 {
     None,
     Move,
+    Grab,
     Rotate,
     Scale,
     Extrude

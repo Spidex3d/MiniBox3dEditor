@@ -4,6 +4,16 @@ constexpr int SCR_WIDTH = 1280;
 constexpr int SCR_HEIGHT = 720;
 constexpr  const wchar_t* TITLE = L"miniBox_Editor_3d";
 
+#define MENU_BAR_MAIN					 1
+#define SIDE_BAR_MAIN					 2
+#define SIDE_BAR_MENU_W					 24
+#define SIDE_BAR_MENU_H					 500
+
+
+#define BUTTON_SIZE_SMALL                24
+#define BUTTON_SIZE_MEDIUM               32
+#define BUTTON_SIZE_LARGE                40
+
 // true - false
 #define GLWIN_TRUE                   1
 #define GLWIN_FALSE                  0

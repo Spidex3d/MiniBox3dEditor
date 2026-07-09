@@ -11,6 +11,7 @@
 #include <editorRender.h>
 #include <sceneObject.h>
 #include <vector>
+#include <boXImage.h>
 
 
 // 24/06/26 A name for our graphics library is boXGL !!
@@ -42,6 +43,7 @@ int main() {
     guiUI ui;
     EditorState editor;
 	editorRender renderEditor;
+    boXImage img;
    
     guiWin::gui_window* window =
         app.guiCreateWindow(SCR_WIDTH, SCR_HEIGHT, TITLE);
@@ -52,6 +54,21 @@ int main() {
     app.guiMakeContextCurrent(window);
 
     app.guiSetWindowIcon(window, L"icon_01.ico");
+
+    // munu icons
+    boXImg selectIcon;
+    boXImg moveIcon;
+    boXImg scaleIcon;
+    boXImg rotateIcon;
+    boXImg extrudeIcon;
+    // C:\Users\marty\Desktop\minibox 3d\MiniBoxEditor\icons
+    img.boXLoadImage("C:/Users/marty/Desktop/minibox 3d/MiniBoxEditor/icons/select.png", selectIcon);
+    img.boXLoadImage("C:/Users/marty/Desktop/minibox 3d/MiniBoxEditor/icons/scale_L.png", scaleIcon);
+    img.boXLoadImage("C:/Users/marty/Desktop/minibox 3d/MiniBoxEditor/icons/move_L.png", moveIcon);
+    img.boXLoadImage("C:/Users/marty/Desktop/minibox 3d/MiniBoxEditor/icons/rotate.png", rotateIcon);
+   // boXLoadImage("icons/rotate.png", rotateIcon);
+   // boXLoadImage("icons/extrude.png", extrudeIcon);
+
 
     Camera camera(vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 1.0f, 0.0f));
     camera.Target = vec3(0.0f, 4.0f, -5.0f);
@@ -119,7 +136,7 @@ int main() {
         static bool sceneWindowOpen = true;
 
 		ui.UISetNextWindowSize(300.0f, 400.0f);
-		ui.UISetNextWindowPos(SCR_WIDTH - 300, 1.0f);
+		ui.UISetNextWindowPos(SCR_WIDTH - 300, 28.0f);
         ui.UIbegin("Scene Collection", &sceneWindowOpen, 2);
 
         float rowY = 45.0f;
@@ -156,10 +173,93 @@ int main() {
 
         ui.End();
 		// ###################################### End scene collection / object list ################
+        ui.UIFrame(10.0f, 30.0f, 42.0f, 500.0f, SIDE_BAR_MAIN); // Side bar menu
+
+        if (ui.WidgetSideImageButton(selectIcon, editor.activeTool == EditorTool::None))
+        {
+            editor.activeTool = EditorTool::None;
+            BOX_LOG_INFO("Select Tool");
+        }
+
+        if (ui.WidgetSideImageButton(scaleIcon, editor.activeTool == EditorTool::Scale))
+        {
+            editor.activeTool = EditorTool::Scale;
+            BOX_LOG_INFO("Scale Tool");
+        }
+
+        if (ui.WidgetSideImageButton(moveIcon, editor.activeTool == EditorTool::Move))
+        {
+            editor.activeTool = EditorTool::Move;
+            BOX_LOG_INFO("Move Tool");
+        }
+
+        if (ui.WidgetSideImageButton(rotateIcon, editor.activeTool == EditorTool::Rotate))
+        {
+            editor.activeTool = EditorTool::Rotate;
+            BOX_LOG_INFO("Rotate Tool");
+        }
+
+        
+
+        /*if (ui.WidgetSideButton("M", editor.activeTool == EditorTool::Move))
+        {
+            BOX_LOG_INFO("Move Tool");
+            editor.activeTool = EditorTool::Move;
+        }
+
+        if (ui.WidgetSideButton("R", editor.activeTool == EditorTool::Rotate))
+        {
+            BOX_LOG_INFO("Rotate Tool");
+            editor.activeTool = EditorTool::Rotate;
+        }
+
+        if (ui.WidgetSideButton("E", editor.activeTool == EditorTool::Extrude))
+        {
+            BOX_LOG_INFO("Extrude Tool");
+            editor.activeTool = EditorTool::Extrude;
+        }
+
+        if (ui.WidgetSideButton("G", editor.activeTool == EditorTool::Grab))
+        {
+            editor.activeTool = EditorTool::Grab;
+        }*/
+
+        ui.UIFrameEnd();
+        
+        ui.UIFrame(0.0f, 0.0f, SCR_WIDTH, 28.0f, MENU_BAR_MAIN); // set to the screen width top menu
+
+
+        if (ui.WidgetFrameButton("File", 10.0f, 2.0f, 60.0f, BUTTON_SIZE_SMALL))
+        {
+            BOX_LOG_INFO("File clicked");
+        }
+
+        if (ui.WidgetFrameButton("Edit", 71.0f, 2.0f, 60.0f, BUTTON_SIZE_SMALL))
+        {
+            BOX_LOG_INFO("Edit clicked");
+        }
+
+        if (ui.WidgetFrameButton("Render", 132.0f, 2.0f, 60.0f, BUTTON_SIZE_SMALL))
+        {
+            BOX_LOG_INFO("RRender clicked");
+        }
+        if (ui.WidgetFrameButton("Add", 194.0f, 2.0f, 60.0f, BUTTON_SIZE_SMALL))
+        {
+            BOX_LOG_INFO("Add Object clicked");
+        }
+
+        ui.UIFrameEnd();
+
+        /*ui.UISetNextWindowSize(SCR_WIDTH, 28.0f);
+        ui.UISetNextWindowPos(0.0f, 0.0f);
+		ui.UIbegin("Menu Bar", nullptr, 3);
+        ui.WidgetMenuBar({ "File", "Edit", "View", "Help", "About"}, 0.0f, 0.0f, static_cast<float>(SCR_WIDTH - 300), 28.0f);
+		ui.End();*/
+
         static bool demoWindowOpen = true;
         ui.UISetNextWindowSize(300.0f, 300.0f);
-        ui.UISetNextWindowPos(SCR_WIDTH - 300, 401.0f);
-        ui.UIbegin("Demo Window", &demoWindowOpen, 1);
+        ui.UISetNextWindowPos(SCR_WIDTH - 300, 428.0f);
+        ui.UIbegin("Properties ", &demoWindowOpen, 1);
 
         if (ui.WidgetButton("OK", 20.0f, 50.0f, 80.0f, 28.0f))
         {

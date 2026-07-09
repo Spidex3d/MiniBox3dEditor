@@ -31,6 +31,24 @@ struct UIwindow
     float dragOffsetY = 0.0f;
 };
 
+struct UIframe
+{
+    int UIid = 0;
+    std::string title;
+
+    float x = 0.0f;
+    float y = 0.0f;
+    float width = 300.0f;
+    float height = 28.0f;
+
+    float cursorX = 0.0f;
+    float cursorY = 0.0f;
+
+    float padding = 2.0f;
+    float spacing = 2.0f;
+
+};
+
 //class guiUIWidgets;
 
 class guiUI
@@ -49,11 +67,24 @@ UIwindow UIctx;
     void UISetNextWindowSize(float width, float height);
 
     void UIbegin(const char* title, bool* p_open = nullptr, int UIid = 0);
-
     void End();
+
+	// this is a frame to group buttons together for menue bars, it has a title bar, no close button
+	// UIFrame posx, posy, width, height, UIFrameid.
+    void UIFrame(float posX, float posY, float width, float height, int UIFrameid = 0);
+	void UIFrameEnd();
+    bool WidgetFrameButton(const char* label, float x, float y, float width, float height);
+    bool WidgetSideButton(const char* label, bool selected = false);
+    bool WidgetSideImageButton(const boXImg& image, bool selected = false);
+    //bool WidgetSideImageButton(const boXImage& image, bool selected = false);
+
     bool WidgetButton(const char* label, float x, float y, float width, float height);
+
     // used for scene collection
     bool WidgetTreeNode(const char* label, bool& expanded, bool selected, float x, float y, float width, float height);
+
+    // A menu bar widget that contains image buttons
+	void WidgetMenuBar(const std::vector<std::string>& buttonLabels, float x, float y, float width, float height);
 
     void WidgetLabel(const char* text, float x, float y);
     //bool WidgetColorBoxLabel(const char* label, float* r, float* g, float* b, float w = 40.0f, float h = 20.0f);
@@ -109,13 +140,18 @@ private:
     bool m_mousePressed = false;
     bool m_mouseReleased = false;
 
+    // window
     UIwindow* m_currentWindow = nullptr;
     std::vector<UIwindow> m_windows;
+    UIwindow* FindOrCreateWindow(const char* title, bool* p_open, int UIid);
 
-private:
+    // frame
+    UIframe* m_currentFrame = nullptr;
+    std::vector<UIframe> m_frames;
+    UIframe* FindOrCreateFrame(float posX, float posY, float width, float height, int UIFrameid);
+
     bool IsMouseInside(float x, float y, float width, float height) const;
 
-    UIwindow* FindOrCreateWindow(const char* title, bool* p_open, int UIid);
 
     bool m_hasNextWindowPos = false;
     bool m_hasNextWindowSize = false;
